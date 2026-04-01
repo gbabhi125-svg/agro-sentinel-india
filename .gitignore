@@ -7,4 +7,8 @@ notebooks/eda_part1.png
 notebooks/eda_part2.png
 notebooks/model_comparison.png
 notebooks/confusion_matrices.png
-notebooks/feature_importance.png
+notebooks/feature_importance.pngvenv/
+*.pkl
+node_modules/
+__pycache__/
+.env
