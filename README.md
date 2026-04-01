@@ -533,4 +533,8 @@ Made with ❤️ for Indian Agriculture | SDG 2 🌾 | SDG 15 🌳
 
 ⭐ Star this repository if it helped you!
 
+<<<<<<< HEAD
 </div>
+=======
+</div>
+>>>>>>> 9cba3e5d39cbb844d984bd4d0d08445dba6a3dcc
