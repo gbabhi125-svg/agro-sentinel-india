@@ -17,7 +17,8 @@ ChartJS.register(
   Filler, Title, Tooltip, Legend
 );
 
-const API = "http://127.0.0.1:5000";
+// To your Railway URL:
+const API = "https://agro-sentinel-india-production.up.railway.app";
 
 // ── Global CSS ────────────────────────────────────────────────
 const GLOBAL_CSS = `
