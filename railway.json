@@ -9,12 +9,3 @@
     "restartPolicyType": "ON_FAILURE"
   }
 }
-```
-
----
-
-## Step 2 — Create `Procfile` in ROOT folder
-
-Create `C:\Users\GB ABHILASH\AgroSentinel\Procfile`:
-```
-web: python backend/app.py
