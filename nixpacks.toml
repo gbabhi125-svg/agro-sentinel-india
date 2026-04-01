@@ -1,0 +1,5 @@
+[phases.build]
+cmds = ["pip install -r requirements.txt", "python ml_models/train_model.py"]
+
+[phases.start]
+cmd = "python backend/app.py"

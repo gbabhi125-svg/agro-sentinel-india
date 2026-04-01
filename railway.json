@@ -1,0 +1,20 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "pip install -r requirements.txt && python ml_models/train_model.py"
+  },
+  "deploy": {
+    "startCommand": "python backend/app.py",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}
+```
+
+---
+
+## Step 2 — Create `Procfile` in ROOT folder
+
+Create `C:\Users\GB ABHILASH\AgroSentinel\Procfile`:
+```
+web: python backend/app.py
