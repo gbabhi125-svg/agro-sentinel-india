@@ -3,12 +3,10 @@ __pycache__/
 *.pyc
 node_modules/
 .env
-notebooks/eda_part1.png
-notebooks/eda_part2.png
-notebooks/model_comparison.png
-notebooks/confusion_matrices.png
-notebooks/feature_importance.pngvenv/
+
+# Models
 *.pkl
-node_modules/
-__pycache__/
-.env
+*.joblib
+
+# Notebooks outputs
+notebooks/*.png
