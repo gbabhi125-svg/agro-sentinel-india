@@ -14,7 +14,8 @@
 
 *Predicting Agricultural Risks for 600 Million Indian Farmers*
 
-[🚀 Live Demo](#) &nbsp;|&nbsp; [📄 Report](#) &nbsp;|&nbsp; [🎥 Video Demo](#) &nbsp;|&nbsp; [📊 Dataset](#)
+[🚀 Live Demo](https://agro-sentinel-india.vercel.app)
+[⚙️ API](https://agro-sentinel-india-production.up.railway.app)(#) &nbsp;|&nbsp; [📄 Report](#) &nbsp;|&nbsp; [🎥 Video Demo](#) &nbsp;|&nbsp; [📊 Dataset](#)
 
 </div>
 
