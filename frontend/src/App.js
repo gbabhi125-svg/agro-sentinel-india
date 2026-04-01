@@ -7,7 +7,7 @@ import {
   RadialLinearScale, PointElement, LineElement, ArcElement,
   Filler, Title, Tooltip, Legend
 } from "chart.js";
-import { Bar, Doughnut, Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
