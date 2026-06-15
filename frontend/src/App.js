@@ -18,7 +18,7 @@ ChartJS.register(
 );
 
 // To your Railway URL:
-const API ="http://127.0.0.1:5000";
+const API = "https://YOUR-RAILWAY-URL.up.railway.app";
 
 // ── Global CSS ────────────────────────────────────────────────
 const GLOBAL_CSS = `
