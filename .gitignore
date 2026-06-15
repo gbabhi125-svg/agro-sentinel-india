@@ -95,3 +95,7 @@ docker-data/
 *.zip
 *.tar.gz
 
+agro_env/
+venv/
+*.dll
+*.pkl
