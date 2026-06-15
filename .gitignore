@@ -94,3 +94,4 @@ docker-data/
 *.swp
 *.zip
 *.tar.gz
+ml_models/*.pklml_models/*.pkl
