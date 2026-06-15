@@ -1016,7 +1016,7 @@ def retrain():
         global le_state,le_crop,le_season,le_drought,feat_names,meta
         retrain_status = {"status":"running","message":"Training..."}
         try:
-            script = os.path.join(BASE_DIR,"ml_models","train_model.py")
+            script = r"C:\Users\GB ABHILASH\AgroSentinel\ml_models\train_model.py"
             res    = subprocess.run([sys.executable,script],
                                     capture_output=True,text=True,timeout=300)
             if res.returncode == 0:

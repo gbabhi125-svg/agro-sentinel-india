@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 import pandas as pd
 import numpy as np
 import os
@@ -7,8 +13,8 @@ warnings.filterwarnings('ignore')
 
 from sklearn.ensemble import (RandomForestClassifier, RandomForestRegressor,
                                GradientBoostingClassifier, GradientBoostingRegressor,
-                               ExtraTreesClassifier)
-from sklearn.tree import DecisionTreeClassifier
+                               ExtraTreesClassifier, ExtraTreesRegressor)
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.model_selection import train_test_split
@@ -26,32 +32,32 @@ MODEL_DIR   = os.path.join(BASE_DIR, "ml_models")
 NB_DIR      = os.path.join(BASE_DIR, "notebooks")
 os.makedirs(NB_DIR, exist_ok=True)
 
-print("="*65)
-print("  AgroSentinel India — ML Training Pipeline v2.0")
-print("="*65)
+print("=" * 65)
+print("  AgroSentinel India -- ML Training Pipeline v2.1 (Fast Mode)")
+print("=" * 65)
 
 # ══════════════════════════════════════════════════════════════
 # STEP 1 — LOAD DATASETS
 # ══════════════════════════════════════════════════════════════
-print("\n📂 STEP 1: Loading datasets...")
+print("\n[STEP 1] Loading datasets...")
 
 prod_df  = pd.read_csv(os.path.join(DS_DIR, "crop_production.csv"))
 yield_df = pd.read_csv(os.path.join(DS_DIR, "crop_yield.csv"))
 rain_df  = pd.read_csv(os.path.join(DS_DIR, "rainfall in india 1901-2015.csv"))
 
-print(f"  crop_production  : {prod_df.shape[0]:,} rows × {prod_df.shape[1]} cols")
-print(f"  crop_yield       : {yield_df.shape[0]:,} rows × {yield_df.shape[1]} cols")
-print(f"  rainfall         : {rain_df.shape[0]:,} rows × {rain_df.shape[1]} cols")
+print(f"  crop_production  : {prod_df.shape[0]:,} rows x {prod_df.shape[1]} cols")
+print(f"  crop_yield       : {yield_df.shape[0]:,} rows x {yield_df.shape[1]} cols")
+print(f"  rainfall         : {rain_df.shape[0]:,} rows x {rain_df.shape[1]} cols")
 
 # ══════════════════════════════════════════════════════════════
 # STEP 2 — PREPROCESS CROP PRODUCTION
 # ══════════════════════════════════════════════════════════════
-print("\n🔧 STEP 2: Preprocessing crop_production...")
+print("\n[STEP 2] Preprocessing crop_production...")
 
 prod_df.columns = (prod_df.columns.str.strip()
                                   .str.lower()
-                                  .str.replace(' ','_')
-                                  .str.replace('-','_'))
+                                  .str.replace(' ', '_')
+                                  .str.replace('-', '_'))
 
 rename_prod = {}
 for c in prod_df.columns:
@@ -65,11 +71,11 @@ for c in prod_df.columns:
 prod_df.rename(columns=rename_prod, inplace=True)
 print(f"  Renamed columns: {list(prod_df.columns)}")
 
-for col in ['area','production','year']:
+for col in ['area', 'production', 'year']:
     if col in prod_df.columns:
         prod_df[col] = pd.to_numeric(prod_df[col], errors='coerce')
 
-prod_df.dropna(subset=['state','crop','area','production'], inplace=True)
+prod_df.dropna(subset=['state', 'crop', 'area', 'production'], inplace=True)
 prod_df = prod_df[(prod_df['production'] > 0) & (prod_df['area'] > 0)]
 prod_df['yield_tha'] = prod_df['production'] / prod_df['area']
 
@@ -90,7 +96,7 @@ print(f"  Unique crops     : {prod_df['crop'].nunique()}")
 # ══════════════════════════════════════════════════════════════
 # STEP 3 — RAINFALL
 # ══════════════════════════════════════════════════════════════
-print("\n🔧 STEP 3: Preprocessing rainfall...")
+print("\n[STEP 3] Preprocessing rainfall...")
 
 rain_df.columns = rain_df.columns.str.strip().str.upper()
 months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
@@ -101,15 +107,15 @@ state_col = next((c for c in rain_df.columns
                   if 'SUBDIVISION' in c or 'STATE' in c or 'REGION' in c), None)
 if state_col:
     rain_state = rain_df.groupby(state_col)['annual'].mean().reset_index()
-    rain_state.columns = ['state_key','avg_rainfall']
+    rain_state.columns = ['state_key', 'avg_rainfall']
     print(f"  Rainfall by region: {len(rain_state)} entries")
 else:
-    print("  No state column — using fallback values")
+    print("  No state column -- using fallback values")
 
 # ══════════════════════════════════════════════════════════════
 # STEP 4 — MASTER DATAFRAME
 # ══════════════════════════════════════════════════════════════
-print("\n🔗 STEP 4: Building master dataset...")
+print("\n[STEP 4] Building master dataset...")
 
 df = prod_df.copy()
 
@@ -149,7 +155,7 @@ print(f"  Failure rate     : {df['crop_failure'].mean()*100:.1f}%")
 # ══════════════════════════════════════════════════════════════
 # STEP 5 — ENCODE
 # ══════════════════════════════════════════════════════════════
-print("\n🔢 STEP 5: Encoding categorical features...")
+print("\n[STEP 5] Encoding categorical features...")
 
 le_state   = LabelEncoder()
 le_crop    = LabelEncoder()
@@ -161,43 +167,59 @@ df['crop_enc']    = le_crop.fit_transform(df['crop'])
 df['season_enc']  = le_season.fit_transform(df['season'])
 df['drought_enc'] = le_drought.fit_transform(df['drought_risk'])
 
-joblib.dump(le_state,   os.path.join(MODEL_DIR,"le_state.pkl"))
-joblib.dump(le_crop,    os.path.join(MODEL_DIR,"le_crop.pkl"))
-joblib.dump(le_season,  os.path.join(MODEL_DIR,"le_season.pkl"))
-joblib.dump(le_drought, os.path.join(MODEL_DIR,"le_drought.pkl"))
-print("  ✅ Label encoders saved")
+joblib.dump(le_state,   os.path.join(MODEL_DIR, "le_state.pkl"))
+joblib.dump(le_crop,    os.path.join(MODEL_DIR, "le_crop.pkl"))
+joblib.dump(le_season,  os.path.join(MODEL_DIR, "le_season.pkl"))
+joblib.dump(le_drought, os.path.join(MODEL_DIR, "le_drought.pkl"))
+print("  [OK] Label encoders saved")
 
-YIELD_FEAT   = ['state_enc','crop_enc','season_enc','year','rainfall']
-DROUGHT_FEAT = ['state_enc','crop_enc','season_enc','year','rainfall']
-FAILURE_FEAT = ['state_enc','crop_enc','season_enc','year','rainfall','yield_tha']
-SEASON_FEAT  = ['state_enc','crop_enc','rainfall','year']
+# ── Feature sets — MUST match what app.py sends ──────────────
+# yield   : [state_enc, crop_enc, season_enc, year, rainfall]  → 5 features
+# drought : [state_enc, crop_enc, season_enc, year, rainfall]  → 5 features
+# failure : [state_enc, crop_enc, season_enc, year, rainfall, yield_tha] → 6 features
+# season  : [state_enc, crop_enc, rainfall, year]              → 4 features
+YIELD_FEAT   = ['state_enc', 'crop_enc', 'season_enc', 'year', 'rainfall']
+DROUGHT_FEAT = ['state_enc', 'crop_enc', 'season_enc', 'year', 'rainfall']
+FAILURE_FEAT = ['state_enc', 'crop_enc', 'season_enc', 'year', 'rainfall', 'yield_tha']
+SEASON_FEAT  = ['state_enc', 'crop_enc', 'rainfall', 'year']
 
 joblib.dump({
     'yield':   YIELD_FEAT,
     'drought': DROUGHT_FEAT,
     'failure': FAILURE_FEAT,
     'season':  SEASON_FEAT,
-}, os.path.join(MODEL_DIR,"feature_names.pkl"))
-print("  ✅ Feature names saved")
+}, os.path.join(MODEL_DIR, "feature_names.pkl"))
+print("  [OK] Feature names saved")
+print(f"  yield   : {len(YIELD_FEAT)} features {YIELD_FEAT}")
+print(f"  drought : {len(DROUGHT_FEAT)} features {DROUGHT_FEAT}")
+print(f"  failure : {len(FAILURE_FEAT)} features {FAILURE_FEAT}")
+print(f"  season  : {len(SEASON_FEAT)} features {SEASON_FEAT}")
 
 # ══════════════════════════════════════════════════════════════
 # STEP 6 — MODEL 1: YIELD PREDICTION
+# NOTE: n_jobs=1 avoids Windows multiprocessing/joblib deadlocks
+#       n_estimators=100 is fast enough; increase if you have time
 # ══════════════════════════════════════════════════════════════
-print("\n"+"="*65)
-print("MODEL 1 — Crop Yield Prediction (Regression)")
-print("="*65)
+print("\n" + "=" * 65)
+print("MODEL 1 -- Crop Yield Prediction (Regression)")
+print("=" * 65)
 
 X = df[YIELD_FEAT].values
 y = df['yield_tha'].values
-Xtr,Xte,ytr,yte = train_test_split(X, y, test_size=0.2, random_state=42)
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, random_state=42)
 print(f"  Train: {len(Xtr):,}  Test: {len(Xte):,}")
 
 yield_candidates = {
-    "Random Forest Regressor":     RandomForestRegressor(n_estimators=200, random_state=42, n_jobs=-1),
-    "XGBoost Regressor":           XGBRegressor(n_estimators=200, random_state=42, verbosity=0),
-    "Gradient Boosting Regressor": GradientBoostingRegressor(n_estimators=150, random_state=42),
-    "Ridge Regression":            Ridge(alpha=1.0),
-    "Linear Regression":           LinearRegression(),
+    "Random Forest":     RandomForestRegressor(n_estimators=100, max_depth=15,
+                             random_state=42, n_jobs=1),
+    "Extra Trees":       ExtraTreesRegressor(n_estimators=100, max_depth=15,
+                             random_state=42, n_jobs=1),
+    "XGBoost":           XGBRegressor(n_estimators=100, max_depth=6,
+                             random_state=42, verbosity=0, n_jobs=1,
+                             tree_method='hist'),
+    "Decision Tree":     DecisionTreeRegressor(max_depth=12, random_state=42),
+    "Ridge":             Ridge(alpha=1.0),
+    "Linear Regression": LinearRegression(),
 }
 
 best_r2 = -999; best_yield = None; best_yname = ""; yield_res = {}
@@ -209,34 +231,36 @@ for name, model in yield_candidates.items():
     r2   = r2_score(yte, pred)
     rmse = np.sqrt(mean_squared_error(yte, pred))
     yield_res[name] = r2
-    print(f"  {name:<35} R²={r2:.4f}  RMSE={rmse:.4f}")
+    print(f"  {name:<22} R2={r2:.4f}  RMSE={rmse:.4f}")
     if r2 > best_r2:
         best_r2 = r2; best_yield = model; best_yname = name
 
-print(f"\n  ★ Best: {best_yname}  R²={best_r2:.4f}")
-joblib.dump(best_yield, os.path.join(MODEL_DIR,"yield_model.pkl"))
-print("  ✅ yield_model.pkl saved")
+print(f"\n  * Best: {best_yname}  R2={best_r2:.4f}")
+joblib.dump(best_yield, os.path.join(MODEL_DIR, "yield_model.pkl"))
+print("  [OK] yield_model.pkl saved")
 
 # ══════════════════════════════════════════════════════════════
 # STEP 7 — MODEL 2: DROUGHT RISK
-# SVM removed — hangs on 200k+ rows (O(n²) kernel computation)
-# Replaced with ExtraTreesClassifier (faster, comparable accuracy)
 # ══════════════════════════════════════════════════════════════
-print("\n"+"="*65)
-print("MODEL 2 — Drought Risk Classification")
-print("="*65)
+print("\n" + "=" * 65)
+print("MODEL 2 -- Drought Risk Classification")
+print("=" * 65)
 
 X2 = df[DROUGHT_FEAT].values
 y2 = df['drought_enc'].values
-X2tr,X2te,y2tr,y2te = train_test_split(X2, y2, test_size=0.2, random_state=42)
+X2tr, X2te, y2tr, y2te = train_test_split(X2, y2, test_size=0.2, random_state=42)
+print(f"  Train: {len(X2tr):,}  Test: {len(X2te):,}")
 
 drought_candidates = {
-    "Random Forest":     RandomForestClassifier(n_estimators=200, random_state=42, n_jobs=-1),
-    "XGBoost":           XGBClassifier(n_estimators=150, random_state=42, verbosity=0, eval_metric='mlogloss'),
-    "Gradient Boosting": GradientBoostingClassifier(n_estimators=150, random_state=42),
-    "Extra Trees":       ExtraTreesClassifier(n_estimators=200, random_state=42, n_jobs=-1),
-    "KNN":               KNeighborsClassifier(n_neighbors=7, n_jobs=-1),
-    "Decision Tree":     DecisionTreeClassifier(max_depth=10, random_state=42),
+    "Random Forest":     RandomForestClassifier(n_estimators=100, max_depth=15,
+                             random_state=42, n_jobs=1),
+    "Extra Trees":       ExtraTreesClassifier(n_estimators=100, max_depth=15,
+                             random_state=42, n_jobs=1),
+    "XGBoost":           XGBClassifier(n_estimators=100, max_depth=6,
+                             random_state=42, verbosity=0, n_jobs=1,
+                             tree_method='hist', eval_metric='mlogloss'),
+    "Decision Tree":     DecisionTreeClassifier(max_depth=12, random_state=42),
+    "KNN":               KNeighborsClassifier(n_neighbors=7, n_jobs=1),
 }
 
 best_dr_acc = 0; best_drought = None; best_drname = ""; drought_res = {}
@@ -251,28 +275,32 @@ for name, model in drought_candidates.items():
     if acc > best_dr_acc:
         best_dr_acc = acc; best_drought = model; best_drname = name
 
-print(f"\n  ★ Best: {best_drname}  Acc={best_dr_acc*100:.2f}%")
-joblib.dump(best_drought, os.path.join(MODEL_DIR,"drought_model.pkl"))
-print("  ✅ drought_model.pkl saved")
+print(f"\n  * Best: {best_drname}  Acc={best_dr_acc*100:.2f}%")
+joblib.dump(best_drought, os.path.join(MODEL_DIR, "drought_model.pkl"))
+print("  [OK] drought_model.pkl saved")
 
 # ══════════════════════════════════════════════════════════════
 # STEP 8 — MODEL 3: CROP FAILURE
 # ══════════════════════════════════════════════════════════════
-print("\n"+"="*65)
-print("MODEL 3 — Crop Failure Risk Classification")
-print("="*65)
+print("\n" + "=" * 65)
+print("MODEL 3 -- Crop Failure Risk Classification")
+print("=" * 65)
 
 X3 = df[FAILURE_FEAT].values
 y3 = df['crop_failure'].values
-X3tr,X3te,y3tr,y3te = train_test_split(X3, y3, test_size=0.2, random_state=42)
+X3tr, X3te, y3tr, y3te = train_test_split(X3, y3, test_size=0.2, random_state=42)
+print(f"  Train: {len(X3tr):,}  Test: {len(X3te):,}")
 
 failure_candidates = {
-    "Random Forest":     RandomForestClassifier(n_estimators=200, random_state=42, n_jobs=-1),
-    "XGBoost":           XGBClassifier(n_estimators=150, random_state=42, verbosity=0, eval_metric='logloss'),
-    "Gradient Boosting": GradientBoostingClassifier(n_estimators=150, random_state=42),
-    "Extra Trees":       ExtraTreesClassifier(n_estimators=200, random_state=42, n_jobs=-1),
-    "KNN":               KNeighborsClassifier(n_neighbors=7, n_jobs=-1),
-    "Decision Tree":     DecisionTreeClassifier(max_depth=10, random_state=42),
+    "Random Forest":     RandomForestClassifier(n_estimators=100, max_depth=15,
+                             random_state=42, n_jobs=1),
+    "Extra Trees":       ExtraTreesClassifier(n_estimators=100, max_depth=15,
+                             random_state=42, n_jobs=1),
+    "XGBoost":           XGBClassifier(n_estimators=100, max_depth=6,
+                             random_state=42, verbosity=0, n_jobs=1,
+                             tree_method='hist', eval_metric='logloss'),
+    "Decision Tree":     DecisionTreeClassifier(max_depth=12, random_state=42),
+    "KNN":               KNeighborsClassifier(n_neighbors=7, n_jobs=1),
 }
 
 best_fl_acc = 0; best_failure = None; best_flname = ""; failure_res = {}
@@ -287,34 +315,37 @@ for name, model in failure_candidates.items():
     if acc > best_fl_acc:
         best_fl_acc = acc; best_failure = model; best_flname = name
 
-print(f"\n  ★ Best: {best_flname}  Acc={best_fl_acc*100:.2f}%")
-joblib.dump(best_failure, os.path.join(MODEL_DIR,"failure_model.pkl"))
-print("  ✅ failure_model.pkl saved")
+print(f"\n  * Best: {best_flname}  Acc={best_fl_acc*100:.2f}%")
+joblib.dump(best_failure, os.path.join(MODEL_DIR, "failure_model.pkl"))
+print("  [OK] failure_model.pkl saved")
 
 # ══════════════════════════════════════════════════════════════
 # STEP 9 — MODEL 4: SEASON RECOMMENDATION
 # ══════════════════════════════════════════════════════════════
-print("\n"+"="*65)
-print("MODEL 4 — Best Season Recommendation")
-print("="*65)
+print("\n" + "=" * 65)
+print("MODEL 4 -- Best Season Recommendation")
+print("=" * 65)
 
 X4 = df[SEASON_FEAT].values
 y4 = df['season_enc'].values
-X4tr,X4te,y4tr,y4te = train_test_split(X4, y4, test_size=0.2, random_state=42)
+X4tr, X4te, y4tr, y4te = train_test_split(X4, y4, test_size=0.2, random_state=42)
+print(f"  Train: {len(X4tr):,}  Test: {len(X4te):,}")
 
 print("  Training Random Forest season model...", flush=True)
-season_model = RandomForestClassifier(n_estimators=200, random_state=42, n_jobs=-1)
+season_model = RandomForestClassifier(n_estimators=100, max_depth=15,
+                                       random_state=42, n_jobs=1)
 season_model.fit(X4tr, y4tr)
 sea_acc = accuracy_score(y4te, season_model.predict(X4te))
 print(f"  Season Model Accuracy: {sea_acc*100:.2f}%")
-joblib.dump(season_model, os.path.join(MODEL_DIR,"season_model.pkl"))
-print("  ✅ season_model.pkl saved")
+joblib.dump(season_model, os.path.join(MODEL_DIR, "season_model.pkl"))
+print("  [OK] season_model.pkl saved")
 
 # ══════════════════════════════════════════════════════════════
 # STEP 10 — SAVE METADATA
 # ══════════════════════════════════════════════════════════════
-print("\n💾 STEP 10: Saving metadata...")
+print("\n[STEP 10] Saving metadata...")
 
+# These keys must match what app.py reads from meta["stats"]
 meta = {
     'crops':   sorted(df['crop'].unique().tolist()),
     'states':  sorted(df['state'].unique().tolist()),
@@ -325,86 +356,94 @@ meta = {
         'total_crops':        int(df['crop'].nunique()),
         'total_states':       int(df['state'].nunique()),
         'total_districts':    int(df['district'].nunique()) if 'district' in df.columns else 0,
-        'year_range':         f"{int(df['year'].min())} — {int(df['year'].max())}",
+        'year_range':         f"{int(df['year'].min())} - {int(df['year'].max())}",
         'yield_mean':         round(float(df['yield_tha'].mean()), 4),
         'yield_max':          round(float(df['yield_tha'].max()),  4),
         'best_yield_model':   best_yname,
+        'yield_r2':           round(float(best_r2),     4),   # app.py reads yield_r2
         'best_yield_r2':      round(float(best_r2),     4),
         'best_drought_model': best_drname,
+        'drought_accuracy':   round(float(best_dr_acc), 4),   # app.py reads drought_accuracy
         'best_drought_acc':   round(float(best_dr_acc), 4),
         'best_failure_model': best_flname,
+        'failure_accuracy':   round(float(best_fl_acc), 4),   # app.py reads failure_accuracy
         'best_failure_acc':   round(float(best_fl_acc), 4),
         'season_acc':         round(float(sea_acc),     4),
     }
 }
 
-joblib.dump(meta, os.path.join(MODEL_DIR,"metadata.pkl"))
-print("  ✅ metadata.pkl saved")
+joblib.dump(meta, os.path.join(MODEL_DIR, "metadata.pkl"))
+print("  [OK] metadata.pkl saved")
 
 # ══════════════════════════════════════════════════════════════
 # STEP 11 — EDA CHARTS
 # ══════════════════════════════════════════════════════════════
-print("\n📊 STEP 11: Generating EDA charts...")
+print("\n[STEP 11] Generating EDA charts...")
 
-fig, axes = plt.subplots(2, 3, figsize=(18, 10))
-fig.suptitle('AgroSentinel India — EDA Dashboard', fontsize=16, fontweight='bold')
+try:
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    fig.suptitle('AgroSentinel India - EDA Dashboard', fontsize=16, fontweight='bold')
 
-top15 = df['crop'].value_counts().head(15)
-axes[0,0].barh(top15.index[::-1], top15.values[::-1], color='#2d8a52')
-axes[0,0].set_title('Top 15 Crops by Records', fontweight='bold')
-axes[0,0].set_xlabel('Record Count')
+    top15 = df['crop'].value_counts().head(15)
+    axes[0,0].barh(top15.index[::-1], top15.values[::-1], color='#2d8a52')
+    axes[0,0].set_title('Top 15 Crops by Records', fontweight='bold')
+    axes[0,0].set_xlabel('Record Count')
 
-axes[0,1].hist(df['yield_tha'], bins=60, color='#1a5c34', edgecolor='white', alpha=0.85)
-axes[0,1].set_title('Yield Distribution (t/ha)', fontweight='bold')
-axes[0,1].set_xlabel('Yield (t/ha)')
+    axes[0,1].hist(df['yield_tha'], bins=60, color='#1a5c34', edgecolor='white', alpha=0.85)
+    axes[0,1].set_title('Yield Distribution (t/ha)', fontweight='bold')
+    axes[0,1].set_xlabel('Yield (t/ha)')
 
-dr_c = df['drought_risk'].value_counts()
-axes[0,2].pie(dr_c.values, labels=dr_c.index, autopct='%1.1f%%',
-              colors=['#dc3545','#ffc107','#198754'], startangle=90)
-axes[0,2].set_title('Drought Risk Distribution', fontweight='bold')
+    dr_c = df['drought_risk'].value_counts()
+    axes[0,2].pie(dr_c.values, labels=dr_c.index, autopct='%1.1f%%',
+                  colors=['#dc3545','#ffc107','#198754'], startangle=90)
+    axes[0,2].set_title('Drought Risk Distribution', fontweight='bold')
 
-st_y = df.groupby('state')['yield_tha'].mean().sort_values(ascending=False).head(10)
-axes[1,0].bar(range(len(st_y)), st_y.values, color='#0a4a7a')
-axes[1,0].set_xticks(range(len(st_y)))
-axes[1,0].set_xticklabels(st_y.index, rotation=40, ha='right', fontsize=8)
-axes[1,0].set_title('Top 10 States — Avg Yield', fontweight='bold')
-axes[1,0].set_ylabel('Avg Yield (t/ha)')
+    st_y = df.groupby('state')['yield_tha'].mean().sort_values(ascending=False).head(10)
+    axes[1,0].bar(range(len(st_y)), st_y.values, color='#0a4a7a')
+    axes[1,0].set_xticks(range(len(st_y)))
+    axes[1,0].set_xticklabels(st_y.index, rotation=40, ha='right', fontsize=8)
+    axes[1,0].set_title('Top 10 States - Avg Yield', fontweight='bold')
+    axes[1,0].set_ylabel('Avg Yield (t/ha)')
 
-names5 = list(drought_res.keys()); vals5 = [v*100 for v in drought_res.values()]
-clrs5  = ['#1a5c34','#2d8a52','#52b788','#74c69d','#b7e4c7','#d8f3dc']
-axes[1,1].bar(range(len(names5)), vals5, color=clrs5[:len(names5)])
-axes[1,1].set_xticks(range(len(names5)))
-axes[1,1].set_xticklabels(names5, rotation=30, ha='right', fontsize=8)
-axes[1,1].set_ylim(0,110); axes[1,1].set_title('Drought Model Comparison', fontweight='bold')
-for i,v in enumerate(vals5): axes[1,1].text(i, v+1, f'{v:.1f}%', ha='center', fontsize=7)
+    names5 = list(drought_res.keys()); vals5 = [v*100 for v in drought_res.values()]
+    clrs5  = ['#1a5c34','#2d8a52','#52b788','#74c69d','#b7e4c7']
+    axes[1,1].bar(range(len(names5)), vals5, color=clrs5[:len(names5)])
+    axes[1,1].set_xticks(range(len(names5)))
+    axes[1,1].set_xticklabels(names5, rotation=30, ha='right', fontsize=8)
+    axes[1,1].set_ylim(0, 110)
+    axes[1,1].set_title('Drought Model Comparison', fontweight='bold')
+    for i, v in enumerate(vals5): axes[1,1].text(i, v+1, f'{v:.1f}%', ha='center', fontsize=7)
 
-names6 = list(failure_res.keys()); vals6 = [v*100 for v in failure_res.values()]
-clrs6  = ['#b45309','#d97706','#f59e0b','#fbbf24','#fde68a','#fef3c7']
-axes[1,2].bar(range(len(names6)), vals6, color=clrs6[:len(names6)])
-axes[1,2].set_xticks(range(len(names6)))
-axes[1,2].set_xticklabels(names6, rotation=30, ha='right', fontsize=8)
-axes[1,2].set_ylim(0,110); axes[1,2].set_title('Crop Failure Model Comparison', fontweight='bold')
-for i,v in enumerate(vals6): axes[1,2].text(i, v+1, f'{v:.1f}%', ha='center', fontsize=7)
+    names6 = list(failure_res.keys()); vals6 = [v*100 for v in failure_res.values()]
+    clrs6  = ['#b45309','#d97706','#f59e0b','#fbbf24','#fde68a']
+    axes[1,2].bar(range(len(names6)), vals6, color=clrs6[:len(names6)])
+    axes[1,2].set_xticks(range(len(names6)))
+    axes[1,2].set_xticklabels(names6, rotation=30, ha='right', fontsize=8)
+    axes[1,2].set_ylim(0, 110)
+    axes[1,2].set_title('Crop Failure Model Comparison', fontweight='bold')
+    for i, v in enumerate(vals6): axes[1,2].text(i, v+1, f'{v:.1f}%', ha='center', fontsize=7)
 
-plt.tight_layout()
-plt.savefig(os.path.join(NB_DIR,"eda_dashboard.png"), dpi=150, bbox_inches='tight')
-plt.close()
-print("  ✅ EDA chart saved → notebooks/eda_dashboard.png")
+    plt.tight_layout()
+    plt.savefig(os.path.join(NB_DIR, "eda_dashboard.png"), dpi=150, bbox_inches='tight')
+    plt.close()
+    print("  [OK] EDA chart saved -> notebooks/eda_dashboard.png")
+except Exception as e:
+    print(f"  [WARN] Chart skipped: {e}")
 
 # ══════════════════════════════════════════════════════════════
 # FINAL SUMMARY
 # ══════════════════════════════════════════════════════════════
-print("\n"+"="*65)
+print("\n" + "=" * 65)
 print("  TRAINING COMPLETE!")
-print("="*65)
+print("=" * 65)
 print(f"  Records   : {len(df):,}")
 print(f"  Crops     : {df['crop'].nunique()}")
 print(f"  States    : {df['state'].nunique()}")
-print(f"\n  Yield     : {best_yname} — R²={best_r2:.4f}")
-print(f"  Drought   : {best_drname} — Acc={best_dr_acc*100:.2f}%")
-print(f"  Failure   : {best_flname} — Acc={best_fl_acc*100:.2f}%")
-print(f"  Season    : Random Forest — Acc={sea_acc*100:.2f}%")
+print(f"\n  Yield     : {best_yname} -- R2={best_r2:.4f}")
+print(f"  Drought   : {best_drname} -- Acc={best_dr_acc*100:.2f}%")
+print(f"  Failure   : {best_flname} -- Acc={best_fl_acc*100:.2f}%")
+print(f"  Season    : Random Forest -- Acc={sea_acc*100:.2f}%")
 print(f"\n  Saved: yield_model.pkl  drought_model.pkl")
 print(f"         failure_model.pkl  season_model.pkl")
 print(f"         metadata.pkl  feature_names.pkl")
-print("\n✅ Ready for Flask API!")
+print("\n[OK] Ready for Flask API!")
