@@ -9,6 +9,18 @@ import subprocess
 import sys
 from datetime import datetime
 
+import os
+from flask import send_from_directory
+
+# Serve React static files
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(os.path.join('static', path)):
+        return send_from_directory('static', path)
+    else:
+        return send_from_directory('static', 'index.html')
+
 app = Flask(__name__)
 CORS(app)
 
@@ -1042,6 +1054,17 @@ def retrain():
 def retrain_status_route():
     return jsonify(retrain_status)
 
+from flask import send_from_directory
+
+# Serve React frontend
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react(path):
+    """Serve React static files"""
+    if path != "" and os.path.exists(os.path.join('static', path)):
+        return send_from_directory('static', path)
+    else:
+        return send_from_directory('static', 'index.html')
 
 if __name__ == "__main__":
     import os

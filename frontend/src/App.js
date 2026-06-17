@@ -18,7 +18,7 @@ ChartJS.register(
 );
 
 // To your Railway URL:
-const API = "agro-sentinel-india-production.up.railway.app";
+const API = " ";
 
 // ── Global CSS ────────────────────────────────────────────────
 const GLOBAL_CSS = `
