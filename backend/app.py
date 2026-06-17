@@ -9,7 +9,7 @@ import subprocess
 import sys
 from datetime import datetime
 
-# ✅ MOVE APP CREATION HERE - BEFORE ANY ROUTES
+# ✅ CRITICAL: CREATE APP FIRST - BEFORE ANY ROUTES
 app = Flask(__name__)
 CORS(app)
 
@@ -19,27 +19,23 @@ MODEL_DIR = os.path.join(BASE_DIR, "ml_models")
 # ── Load everything ───────────────────────────────────────────
 print("Loading AgroSentinel India models...")
 
-try:
-    yield_model   = joblib.load(os.path.join(MODEL_DIR, "yield_model.pkl"))
-    drought_model = joblib.load(os.path.join(MODEL_DIR, "drought_model.pkl"))
-    failure_model = joblib.load(os.path.join(MODEL_DIR, "failure_model.pkl"))
-    season_model  = joblib.load(os.path.join(MODEL_DIR, "season_model.pkl"))
-    le_state      = joblib.load(os.path.join(MODEL_DIR, "le_state.pkl"))
-    le_crop       = joblib.load(os.path.join(MODEL_DIR, "le_crop.pkl"))
-    le_season     = joblib.load(os.path.join(MODEL_DIR, "le_season.pkl"))
-    le_drought    = joblib.load(os.path.join(MODEL_DIR, "le_drought.pkl"))
-    feat_names    = joblib.load(os.path.join(MODEL_DIR, "feature_names.pkl"))
-    meta          = joblib.load(os.path.join(MODEL_DIR, "metadata.pkl"))
-    print(f"✅ Models loaded — {len(meta['crops'])} crops | {len(meta['states'])} states")
-except Exception as e:
-    print(f"⚠️ Error loading models: {e}")
-    meta = {"crops": ["Rice"], "states": ["Maharashtra"], "stats": {}}
-    feat_names = {"yield": [], "drought": [], "failure": [], "season": []}
+yield_model   = joblib.load(os.path.join(MODEL_DIR, "yield_model.pkl"))
+drought_model = joblib.load(os.path.join(MODEL_DIR, "drought_model.pkl"))
+failure_model = joblib.load(os.path.join(MODEL_DIR, "failure_model.pkl"))
+season_model  = joblib.load(os.path.join(MODEL_DIR, "season_model.pkl"))
+le_state      = joblib.load(os.path.join(MODEL_DIR, "le_state.pkl"))
+le_crop       = joblib.load(os.path.join(MODEL_DIR, "le_crop.pkl"))
+le_season     = joblib.load(os.path.join(MODEL_DIR, "le_season.pkl"))
+le_drought    = joblib.load(os.path.join(MODEL_DIR, "le_drought.pkl"))
+feat_names    = joblib.load(os.path.join(MODEL_DIR, "feature_names.pkl"))
+meta          = joblib.load(os.path.join(MODEL_DIR, "metadata.pkl"))
 
-YIELD_FEAT   = feat_names.get('yield', []) if feat_names else []
-DROUGHT_FEAT = feat_names.get('drought', []) if feat_names else []
-FAILURE_FEAT = feat_names.get('failure', []) if feat_names else []
-SEASON_FEAT  = feat_names.get('season', []) if feat_names else []
+print(f"✅ Models loaded — {len(meta['crops'])} crops | {len(meta['states'])} states")
+
+YIELD_FEAT   = feat_names['yield']
+DROUGHT_FEAT = feat_names['drought']
+FAILURE_FEAT = feat_names['failure']
+SEASON_FEAT  = feat_names['season']
 
 retrain_status = {"status": "idle", "message": ""}
 
@@ -294,6 +290,8 @@ def predict_proba_row(model, feat_cols, values):
 
 
 # ══════════════════════════════════════════════════════════════
+# ✅ NOW ALL ROUTES (app exists, no errors)
+# ══════════════════════════════════════════════════════════════
 @app.route("/")
 def home():
     return jsonify({"app":"AgroSentinel India","status":"running","version":"4.0"})
@@ -404,7 +402,13 @@ def predict_all():
 
 # ── Soil Health Score ─────────────────────────────────────
 def compute_soil_health(state, rainfall, drought_risk, yield_val):
-    score = 50
+    """
+    Heuristic soil health score (0-100) based on rainfall, drought risk,
+    state agro-zone data and yield performance.
+    """
+    score = 50  # base
+
+    # Rainfall component (ideal: 800-1500mm)
     if 800 <= rainfall <= 1500:
         score += 20
     elif 600 <= rainfall < 800 or 1500 < rainfall <= 2000:
@@ -412,24 +416,33 @@ def compute_soil_health(state, rainfall, drought_risk, yield_val):
     elif rainfall < 600:
         score -= 10
     else:
-        score += 5
+        score += 5  # very high rainfall — leaching risk
+
+    # Drought risk
     if drought_risk == "Low":    score += 15
     elif drought_risk == "Medium": score += 5
     else: score -= 10
+
+    # Yield performance
     if yield_val >= 3.0:   score += 15
     elif yield_val >= 1.5: score += 8
     elif yield_val < 0.8:  score -= 8
+
+    # State soil quality bonus (based on known agro-zones)
     HIGH_SOIL_STATES = ["punjab","haryana","uttar pradesh","west bengal","andhra pradesh","telangana"]
     LOW_SOIL_STATES  = ["rajasthan","gujarat","himachal pradesh","uttarakhand"]
     sl = state.lower()
     if any(s in sl for s in HIGH_SOIL_STATES): score += 10
     elif any(s in sl for s in LOW_SOIL_STATES): score -= 5
+
     score = max(5, min(100, score))
+
     if score >= 80:   grade, detail = "Excellent 🟢", "Soil is fertile, well-structured and nutrient-rich. Ideal for high-yield farming."
     elif score >= 65: grade, detail = "Good 🟡", "Soil conditions are favourable. Moderate organic matter. Regular NPK application recommended."
     elif score >= 50: grade, detail = "Moderate 🟠", "Soil shows signs of stress. Improve with compost, green manure and balanced irrigation."
     elif score >= 35: grade, detail = "Poor 🔴", "Soil health is degraded. Urgent need for soil amendment, mulching and moisture conservation."
     else:             grade, detail = "Critical ⚫", "Severe soil degradation detected. Consult local Krishi Vigyan Kendra immediately."
+
     return score, grade, detail
 
 
@@ -437,8 +450,15 @@ def compute_soil_health(state, rainfall, drought_risk, yield_val):
 def generate_ai_advisory(crop, state, season, year, rainfall, yield_val,
                           yield_grade, drought_risk, failure_risk, failure_pct,
                           best_season, soil_score):
+    """
+    Generates a structured rule-based AI advisory paragraph
+    explaining WHY the current output is what it is,
+    what to improve, and a future prediction.
+    """
     crop_t  = crop.title()
     state_t = state.title()
+
+    # WHY section
     why_parts = []
     if drought_risk == "High":
         why_parts.append(f"rainfall of {rainfall}mm is critically below the optimal requirement for {crop_t}")
@@ -446,12 +466,16 @@ def generate_ai_advisory(crop, state, season, year, rainfall, yield_val,
         why_parts.append(f"rainfall of {rainfall}mm is slightly below optimal, creating moderate water stress")
     else:
         why_parts.append(f"rainfall of {rainfall}mm is adequate for {crop_t} cultivation")
+
     if season != best_season:
         why_parts.append(f"the selected season ({season}) is not the most optimal — {best_season} shows better historical performance")
     else:
         why_parts.append(f"{season} is the ideal season for {crop_t} in this region")
+
     why_text = f"📊 **Why this result?** The predicted yield of {yield_val} t/ha ({yield_grade} grade) is primarily because {' and '.join(why_parts)}. " \
                f"Soil health score of {soil_score}/100 also contributes to this outcome in {state_t}."
+
+    # IMPROVE section
     improve_parts = []
     if drought_risk in ["High","Medium"]:
         improve_parts.append("install drip or sprinkler irrigation to reduce water dependence")
@@ -464,9 +488,13 @@ def generate_ai_advisory(crop, state, season, year, rainfall, yield_val,
         improve_parts.append("get a free Soil Health Card test from your nearest Krishi Vigyan Kendra")
     if season != best_season:
         improve_parts.append(f"consider switching to {best_season} season for 15-25% better yield")
+
     if not improve_parts:
         improve_parts.append("maintain current practices and monitor weather forecasts weekly")
+
     improve_text = f"💡 **What to improve:** {'; '.join(improve_parts[:3]).capitalize()}."
+
+    # FUTURE PREDICTION
     trend = "stable"
     future_yield = yield_val
     if year < 2026:
@@ -478,11 +506,13 @@ def generate_ai_advisory(crop, state, season, year, rainfall, yield_val,
             future_yield = round(yield_val * 0.88, 2)
         else:
             future_yield = round(yield_val * 1.04, 2)
+
     future_text = (
         f"🔮 **Future outlook (next season):** Based on current trends, {crop_t} yield in {state_t} "
         f"is expected to be {trend}, with a projected yield of approximately {future_yield} t/ha. "
         f"{'Climate variability and water availability remain key risk factors.' if drought_risk != 'Low' else 'Continue with current best practices for sustained performance.'}"
     )
+
     return {
         "why":     why_text,
         "improve": improve_text,
@@ -494,6 +524,10 @@ def generate_ai_advisory(crop, state, season, year, rainfall, yield_val,
 # ── Irrigation Water Requirement Calculator ──────────────
 @app.route("/api/irrigation", methods=["POST"])
 def irrigation_calculator():
+    """
+    Calculates irrigation water requirement based on crop, season,
+    state rainfall, and farm area.
+    """
     d = request.json
     try:
         crop     = d.get("crop","Rice").lower()
@@ -501,13 +535,21 @@ def irrigation_calculator():
         state    = d.get("state","Maharashtra")
         area_ha  = float(d.get("area_ha", 1.0))
         rainfall = float(d.get("rainfall", get_rain(state)))
+
+        # Get crop water requirement
         crop_data  = CROP_WATER_REQ.get(crop, CROP_WATER_REQ["default"])
         water_need = crop_data.get(season, crop_data.get("default", 600))
+
+        # Effective rainfall (approx 70% of rainfall is usable)
         eff_rain   = min(rainfall * 0.70, water_need)
         irrigation = max(0, water_need - eff_rain)
-        volume_liters     = round(irrigation * area_ha * 10000, 0)
+
+        # Volume calculations
+        volume_liters     = round(irrigation * area_ha * 10000, 0)  # mm * ha -> liters
         volume_m3         = round(volume_liters / 1000, 1)
-        daily_requirement = round(irrigation / 120, 1)
+        daily_requirement = round(irrigation / 120, 1)  # spread over ~120 day season
+
+        # Method recommendation
         if irrigation > 600:
             method = "Drip Irrigation (most efficient — saves 40-60% water)"
             method_emoji = "💧"
@@ -524,7 +566,10 @@ def irrigation_calculator():
             method = "Rain-fed (no supplemental irrigation needed)"
             method_emoji = "🌧️"
             efficiency = "Rainfall is sufficient — natural farming possible"
+
+        # Cost estimate (approx ₹8 per 1000 liters for canal/borewell)
         cost_estimate = round(volume_liters / 1000 * 8, 0)
+
         return jsonify({
             "crop": crop.title(),
             "season": season,
@@ -554,6 +599,10 @@ def irrigation_calculator():
 # ── Pest & Disease Risk Predictor ───────────────────────
 @app.route("/api/pest-risk", methods=["POST"])
 def pest_risk():
+    """
+    Predicts pest and disease risk based on crop, weather conditions,
+    and season using rule-based expert system.
+    """
     d = request.json
     try:
         crop        = d.get("crop","Rice").lower()
@@ -562,7 +611,10 @@ def pest_risk():
         rainfall    = float(d.get("rainfall", 1000))
         season      = d.get("season","Kharif")
         state       = d.get("state","Maharashtra")
+
         crop_data = PEST_RISK_DATA.get(crop, PEST_RISK_DATA["default"])
+
+        # Determine weather conditions
         conditions = []
         if humidity > 75:    conditions.append("high_humidity")
         if humidity < 40:    conditions.append("low_humidity")
@@ -571,6 +623,8 @@ def pest_risk():
         if temperature < 18: conditions.append("cool_moist")
         if rainfall > 150:   conditions.append("standing_water")
         if rainfall < 30:    conditions.append("dry_weather")
+
+        # Score pests
         pest_results = []
         for pest in crop_data["pests"]:
             matching = sum(1 for rf in pest["risk_factors"] if rf in conditions)
@@ -583,6 +637,8 @@ def pest_risk():
                 "severity": pest["severity"],
                 "color": "danger" if score>=65 else "warning" if score>=40 else "success"
             })
+
+        # Score diseases
         disease_results = []
         for disease in crop_data["diseases"]:
             matching = sum(1 for rf in disease["risk_factors"] if rf in conditions)
@@ -595,12 +651,18 @@ def pest_risk():
                 "severity": disease["severity"],
                 "color": "danger" if score>=65 else "warning" if score>=40 else "success"
             })
+
+        # Sort by risk
         pest_results.sort(key=lambda x: x["risk_score"], reverse=True)
         disease_results.sort(key=lambda x: x["risk_score"], reverse=True)
+
+        # Overall risk
         all_scores = [p["risk_score"] for p in pest_results] + [d["risk_score"] for d in disease_results]
         overall = round(sum(all_scores)/len(all_scores), 1) if all_scores else 30
         overall_level = "High" if overall >= 60 else "Medium" if overall >= 40 else "Low"
         overall_color = "danger" if overall >= 60 else "warning" if overall >= 40 else "success"
+
+        # Preventive measures
         prevention = []
         if overall >= 60:
             prevention = [
@@ -622,6 +684,7 @@ def pest_risk():
                 "Maintain balanced fertilization",
                 "Practice crop rotation next season"
             ]
+
         return jsonify({
             "crop": crop.title(),
             "state": state.title(),
@@ -643,21 +706,31 @@ def pest_risk():
         return jsonify({"error": str(e)}), 400
 
 
-# ── Crop Price Forecast ─────────────────────
+# ── Crop Price Forecast (Next 3 Months) ─────────────────
 @app.route("/api/price-forecast/<crop_name>")
 def price_forecast(crop_name):
+    """
+    Generates a 3-month price forecast based on current MSP/market price
+    and seasonal trend multipliers.
+    """
     try:
         key  = crop_name.lower().strip()
         base_price = FALLBACK_PRICES.get(key, 2000)
+
+        # Try to get live price first
         try:
             from app import market_price
         except:
             pass
+
         trend_key   = key if key in SEASONAL_PRICE_TREND else "default"
         trend_data  = SEASONAL_PRICE_TREND[trend_key]
-        current_month = datetime.now().month - 1
+        current_month = datetime.now().month - 1  # 0-indexed
+
         months = []
-        month_names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+        month_names = ["Jan","Feb","Mar","Apr","May","Jun",
+                       "Jul","Aug","Sep","Oct","Nov","Dec"]
+
         for i in range(3):
             m_idx   = (current_month + i + 1) % 12
             mult    = trend_data[m_idx]
@@ -665,6 +738,7 @@ def price_forecast(crop_name):
             trend   = "↑ Rising" if mult > trend_data[current_month] else \
                       "↓ Falling" if mult < trend_data[current_month] else "→ Stable"
             change_pct = round((mult - trend_data[current_month]) / trend_data[current_month] * 100, 1)
+
             months.append({
                 "month": month_names[m_idx],
                 "price": price,
@@ -675,8 +749,11 @@ def price_forecast(crop_name):
                                   "Hold stock if possible" if mult > 0.98 else
                                   "Sell quickly — price may drop further"
             })
+
+        # Trading recommendation
         best_month = max(months, key=lambda x: x["price"])
         worst_month = min(months, key=lambda x: x["price"])
+
         return jsonify({
             "crop": crop_name.title(),
             "current_price": base_price,
@@ -698,6 +775,10 @@ def price_forecast(crop_name):
 # ── Government Scheme Recommender ───────────────────────
 @app.route("/api/schemes", methods=["POST"])
 def scheme_recommender():
+    """
+    Recommends applicable government schemes based on crop,
+    state, drought risk, and farmer profile.
+    """
     d = request.json
     try:
         crop         = d.get("crop","Rice").lower()
@@ -705,17 +786,25 @@ def scheme_recommender():
         drought_risk = d.get("drought_risk","Low")
         yield_grade  = d.get("yield_grade","Good")
         area_ha      = float(d.get("area_ha", 1.0))
+
         recommended = []
+
         for scheme_id, scheme in GOVT_SCHEMES.items():
             include = True
+
+            # Check crop applicability
             if scheme["applicable_crops"] != "all":
                 crop_match = any(c in crop for c in scheme["applicable_crops"])
                 if not crop_match:
                     include = False
+
+            # Check drought-specific schemes
             if "applicable_drought" in scheme:
                 if drought_risk not in scheme["applicable_drought"]:
                     include = False
+
             if include:
+                # Compute relevance score
                 relevance = 50
                 if scheme_id == "PM-KISAN":
                     if area_ha <= 2: relevance = 95
@@ -741,6 +830,7 @@ def scheme_recommender():
                     else: relevance = 60
                 elif scheme_id == "RKVY":
                     relevance = 62
+
                 recommended.append({
                     "id": scheme_id,
                     "full_name": scheme["full_name"],
@@ -750,7 +840,10 @@ def scheme_recommender():
                     "emoji": scheme["emoji"],
                     "relevance_score": relevance
                 })
+
+        # Sort by relevance
         recommended.sort(key=lambda x: x["relevance_score"], reverse=True)
+
         return jsonify({
             "crop": crop.title(),
             "state": state.title(),
@@ -763,7 +856,7 @@ def scheme_recommender():
         return jsonify({"error": str(e)}), 400
 
 
-# ── Individual endpoints ──────────────────────────
+# ── Individual endpoints (existing) ──────────────────────────
 @app.route("/api/predict-yield", methods=["POST"])
 def predict_yield():
     d = request.json
@@ -952,7 +1045,7 @@ def retrain():
 def retrain_status_route():
     return jsonify(retrain_status)
 
-# ✅ SERVE REACT - LAST ROUTE (CATCH-ALL)
+# ✅ SERVE REACT - BOTTOM (CATCH-ALL ROUTE - MUST BE LAST!)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
