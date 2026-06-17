@@ -18,7 +18,7 @@ ChartJS.register(
 );
 
 // To your Railway URL:
-const API = " ";
+const API = "https://agro-sentinel-india.onrender.com";
 
 // ── Global CSS ────────────────────────────────────────────────
 const GLOBAL_CSS = `
