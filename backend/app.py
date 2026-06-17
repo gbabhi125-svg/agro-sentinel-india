@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import joblib
 import numpy as np
@@ -9,18 +9,7 @@ import subprocess
 import sys
 from datetime import datetime
 
-import os
-from flask import send_from_directory
-
-# Serve React static files
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve(path):
-    if path != "" and os.path.exists(os.path.join('static', path)):
-        return send_from_directory('static', path)
-    else:
-        return send_from_directory('static', 'index.html')
-
+# ✅ CRITICAL: CREATE APP FIRST - BEFORE ANY ROUTES
 app = Flask(__name__)
 CORS(app)
 
@@ -301,6 +290,8 @@ def predict_proba_row(model, feat_cols, values):
 
 
 # ══════════════════════════════════════════════════════════════
+# ✅ NOW ALL ROUTES (app exists, no errors)
+# ══════════════════════════════════════════════════════════════
 @app.route("/")
 def home():
     return jsonify({"app":"AgroSentinel India","status":"running","version":"4.0"})
@@ -409,7 +400,7 @@ def predict_all():
         return jsonify({"error":str(e)}), 400
 
 
-# ── NEW: Soil Health Score ─────────────────────────────────────
+# ── Soil Health Score ─────────────────────────────────────
 def compute_soil_health(state, rainfall, drought_risk, yield_val):
     """
     Heuristic soil health score (0-100) based on rainfall, drought risk,
@@ -455,7 +446,7 @@ def compute_soil_health(state, rainfall, drought_risk, yield_val):
     return score, grade, detail
 
 
-# ── NEW: AI Advisory Generator ────────────────────────────────
+# ── AI Advisory Generator ────────────────────────────────
 def generate_ai_advisory(crop, state, season, year, rainfall, yield_val,
                           yield_grade, drought_risk, failure_risk, failure_pct,
                           best_season, soil_score):
@@ -530,7 +521,7 @@ def generate_ai_advisory(crop, state, season, year, rainfall, yield_val,
     }
 
 
-# ── NEW: Irrigation Water Requirement Calculator ──────────────
+# ── Irrigation Water Requirement Calculator ──────────────
 @app.route("/api/irrigation", methods=["POST"])
 def irrigation_calculator():
     """
@@ -605,7 +596,7 @@ def irrigation_calculator():
         return jsonify({"error": str(e)}), 400
 
 
-# ── NEW: Pest & Disease Risk Predictor ───────────────────────
+# ── Pest & Disease Risk Predictor ───────────────────────
 @app.route("/api/pest-risk", methods=["POST"])
 def pest_risk():
     """
@@ -715,7 +706,7 @@ def pest_risk():
         return jsonify({"error": str(e)}), 400
 
 
-# ── NEW: Crop Price Forecast (Next 3 Months) ─────────────────
+# ── Crop Price Forecast (Next 3 Months) ─────────────────
 @app.route("/api/price-forecast/<crop_name>")
 def price_forecast(crop_name):
     """
@@ -781,7 +772,7 @@ def price_forecast(crop_name):
         return jsonify({"error": str(e)}), 400
 
 
-# ── NEW: Government Scheme Recommender ───────────────────────
+# ── Government Scheme Recommender ───────────────────────
 @app.route("/api/schemes", methods=["POST"])
 def scheme_recommender():
     """
@@ -1054,12 +1045,10 @@ def retrain():
 def retrain_status_route():
     return jsonify(retrain_status)
 
-from flask import send_from_directory
-
-# Serve React frontend
+# ✅ SERVE REACT - BOTTOM (CATCH-ALL ROUTE - MUST BE LAST!)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-def serve_react(path):
+def serve(path):
     """Serve React static files"""
     if path != "" and os.path.exists(os.path.join('static', path)):
         return send_from_directory('static', path)
