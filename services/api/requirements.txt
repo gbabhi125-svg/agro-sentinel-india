@@ -13,3 +13,4 @@ pytest
 google-auth
 bcrypt
 pyjwt
+xgboost

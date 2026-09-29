@@ -28,9 +28,11 @@ class FarmModels:
         self.yield_model = joblib.load(os.path.join(REGISTRY_DIR, "yield_model.pkl"))
         self.failure_model = joblib.load(os.path.join(REGISTRY_DIR, "failure_model.pkl"))
         self.season_model = joblib.load(os.path.join(REGISTRY_DIR, "season_model.pkl"))
+        self.drought_model = joblib.load(os.path.join(REGISTRY_DIR, "drought_model.pkl"))
         self.le_state = joblib.load(os.path.join(REGISTRY_DIR, "le_state.pkl"))
         self.le_crop = joblib.load(os.path.join(REGISTRY_DIR, "le_crop.pkl"))
         self.le_season = joblib.load(os.path.join(REGISTRY_DIR, "le_season.pkl"))
+        self.le_drought = joblib.load(os.path.join(REGISTRY_DIR, "le_drought.pkl"))
         with open(os.path.join(REGISTRY_DIR, "metadata.json")) as f:
             self.meta = json.load(f)
         with open(os.path.join(REGISTRY_DIR, "state_lpa.json")) as f:
@@ -108,7 +110,32 @@ class FarmModels:
         return {
             "risk_level": risk, "category": category, "departure_from_lpa_pct": departure_pct,
             "state_lpa_mm": lpa, "given_rainfall_mm": rainfall_mm,
-            "method": "rule-based departure from long-period average, not a trained ML model",
+            "method": "rule-based departure from long-period average — used here because the season's "
+                      "actual rainfall is already known (from weather data or your own reading), which "
+                      "the rule can use directly and the ML model below deliberately can't.",
+        }
+
+    def drought_early_forecast(self, state, crop, season, year):
+        """The mini-project's Model 2 (Drought Risk Classification), trained honestly:
+        WITHOUT rainfall as a feature, so it has to forecast the category before
+        the season's rain is known — a real forecasting task, not a lookup of the
+        label from its own input. Expect modest accuracy (see model-card), not the
+        old mini-project's leaked ~99%. Complements, not replaces, drought_risk()
+        above, which is more accurate once rainfall is actually known."""
+        se, ce, ne = (self._enc(self.le_state, "state", state),
+                      self._enc(self.le_crop, "crop", crop),
+                      self._enc(self.le_season, "season", season))
+        x = [[se, ce, ne, year]]
+        pred = int(self.drought_model.predict(x)[0])
+        proba = self.drought_model.predict_proba(x)[0]
+        category = self.le_drought.inverse_transform([pred])[0]
+        v = self.meta["validation"]
+        return {
+            "category": category, "confidence": round(float(max(proba)), 3),
+            "model_honesty_note": f"Out-of-time test accuracy={v['drought_test_accuracy']} vs. "
+                                   f"majority-baseline={v['drought_majority_baseline']} (always guessing the "
+                                   f"commonest category) — real skill over the baseline, but modest, because "
+                                   f"forecasting rain from state/crop/season/year alone is genuinely hard.",
         }
 
 

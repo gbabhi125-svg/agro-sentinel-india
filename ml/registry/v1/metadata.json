@@ -23,6 +23,12 @@
       "Crop_enc",
       "year",
       "rainfall"
+    ],
+    "drought": [
+      "State_enc",
+      "Crop_enc",
+      "Season_enc",
+      "year"
     ]
   },
   "crops": [
@@ -122,6 +128,12 @@
     "Whole Year",
     "Winter"
   ],
+  "drought_labels": [
+    "Deficient",
+    "Excess",
+    "Normal",
+    "Scanty"
+  ],
   "single_season_crops": [
     "Cardamom",
     "Coconut",
@@ -196,366 +208,397 @@
     "other oilseeds": 0.574
   },
   "known_issues": [
-    "Coconut yield is in nuts/ha, every other crop is in t/ha \u2014 never compare Coconut's MAE against another crop's.",
-    "214 rows were dropped for exceeding their own crop's 99th-percentile yield (likely data-entry errors in the source APY dataset).",
-    "Rainfall LPA for states with no matching IMD subdivision (uses the national mean instead \u2014 see drought.py) is a coarser estimate."
+    "Coconut yield is in nuts/ha, every other crop is in t/ha.",
+    "214 rows dropped for exceeding their own crop's 99th-percentile yield.",
+    "Drought model excludes rainfall from its inputs on purpose (see train.py) \u2014 its accuracy reflects genuinely forecasting drought category before the season's rain is known, which is a hard problem. Do not compare it to the old mini-project's 99%+ 'accuracy', which was measuring a model given the answer as an input."
   ],
+  "algorithm_comparison": {
+    "yield_r2": {
+      "RandomForest": 0.9768,
+      "XGBoost": 0.9795,
+      "Ridge": 0.0343,
+      "LinearRegression": 0.0003
+    },
+    "drought_accuracy": {
+      "RandomForest": 0.7006,
+      "GradientBoosting": 0.7446,
+      "XGBoost": 0.7073,
+      "KNN": 0.6172,
+      "DecisionTree": 0.6443,
+      "SVM_RBF": 0.6232
+    },
+    "failure_f1_weighted": {
+      "RandomForest": 0.8809,
+      "GradientBoosting": 0.8628,
+      "XGBoost": 0.8948,
+      "KNN": 0.8402,
+      "DecisionTree": 0.8358,
+      "SVM_RBF": 0.3662
+    }
+  },
+  "best_algorithm": {
+    "yield": "XGBoost",
+    "drought": "GradientBoosting",
+    "failure": "XGBoost",
+    "season": "RandomForest"
+  },
   "validation": {
-    "method": "out-of-time: trained on years <= 2016, tested on [2017, 2018, 2019] (never seen during training)",
+    "method": "out-of-time: trained on years <= 2016, tested on [2017, 2018, 2019]",
     "n_train": 16298,
     "n_test": 3140,
-    "yield_test_r2": 0.9768,
-    "yield_test_mae_t_per_ha_pooled": 8.6466,
-    "yield_test_mae_note": "pooled MAE mixes crop scales, see yield_test_mae_per_crop instead",
+    "yield_test_r2": 0.9795,
+    "yield_test_mae_t_per_ha_pooled": 9.5048,
     "yield_test_mae_per_crop": {
       "Arecanut": {
         "n_test": 24,
-        "mae": 0.704,
+        "mae": 11.205,
         "mean_actual": 3.042,
         "unit": "t/ha"
       },
       "Arhar/Tur": {
         "n_test": 80,
-        "mae": 0.174,
+        "mae": 3.13,
         "mean_actual": 0.95,
         "unit": "t/ha"
       },
       "Bajra": {
         "n_test": 85,
-        "mae": 0.61,
+        "mae": 5.138,
         "mean_actual": 2.025,
         "unit": "t/ha"
       },
       "Banana": {
         "n_test": 33,
-        "mae": 9.322,
+        "mae": 8.107,
         "mean_actual": 33.606,
         "unit": "t/ha"
       },
       "Barley": {
         "n_test": 40,
-        "mae": 0.303,
+        "mae": 4.242,
         "mean_actual": 1.766,
         "unit": "t/ha"
       },
       "Black pepper": {
         "n_test": 22,
-        "mae": 0.266,
+        "mae": 4.311,
         "mean_actual": 0.85,
         "unit": "t/ha"
       },
       "Cardamom": {
         "n_test": 9,
-        "mae": 0.133,
+        "mae": 2.062,
         "mean_actual": 0.092,
         "unit": "t/ha"
       },
       "Cashewnut": {
         "n_test": 25,
-        "mae": 0.978,
+        "mae": 3.996,
         "mean_actual": 0.683,
         "unit": "t/ha"
       },
       "Castor seed": {
         "n_test": 48,
-        "mae": 0.144,
+        "mae": 9.771,
         "mean_actual": 0.723,
         "unit": "t/ha"
       },
       "Coconut": {
         "n_test": 24,
-        "mae": 1011.129,
+        "mae": 959.839,
         "mean_actual": 8669.163,
         "unit": "nuts/ha"
       },
       "Coriander": {
         "n_test": 36,
-        "mae": 0.436,
+        "mae": 1.943,
         "mean_actual": 1.1,
         "unit": "t/ha"
       },
       "Cotton(lint)": {
         "n_test": 70,
-        "mae": 0.761,
+        "mae": 1.31,
         "mean_actual": 1.871,
         "unit": "t/ha"
       },
       "Cowpea(Lobia)": {
         "n_test": 45,
-        "mae": 0.43,
+        "mae": 1.2,
         "mean_actual": 0.873,
         "unit": "t/ha"
       },
       "Dry chillies": {
         "n_test": 57,
-        "mae": 1.266,
+        "mae": 2.834,
         "mean_actual": 3.229,
         "unit": "t/ha"
       },
       "Garlic": {
         "n_test": 40,
-        "mae": 1.531,
+        "mae": 2.252,
         "mean_actual": 4.878,
         "unit": "t/ha"
       },
       "Ginger": {
         "n_test": 51,
-        "mae": 2.048,
+        "mae": 3.059,
         "mean_actual": 7.857,
         "unit": "t/ha"
       },
       "Gram": {
         "n_test": 73,
-        "mae": 0.325,
+        "mae": 1.019,
         "mean_actual": 1.015,
         "unit": "t/ha"
       },
       "Groundnut": {
         "n_test": 114,
-        "mae": 0.467,
+        "mae": 1.545,
         "mean_actual": 1.695,
         "unit": "t/ha"
       },
       "Guar seed": {
         "n_test": 14,
-        "mae": 0.307,
+        "mae": 1.303,
         "mean_actual": 0.702,
         "unit": "t/ha"
       },
       "Horse-gram": {
         "n_test": 63,
-        "mae": 0.215,
+        "mae": 2.106,
         "mean_actual": 0.558,
         "unit": "t/ha"
       },
       "Jowar": {
         "n_test": 77,
-        "mae": 0.305,
+        "mae": 1.037,
         "mean_actual": 1.131,
         "unit": "t/ha"
       },
       "Jute": {
         "n_test": 25,
-        "mae": 1.461,
+        "mae": 2.421,
         "mean_actual": 6.665,
         "unit": "t/ha"
       },
       "Khesari": {
         "n_test": 11,
-        "mae": 0.196,
+        "mae": 1.043,
         "mean_actual": 0.742,
         "unit": "t/ha"
       },
       "Linseed": {
         "n_test": 42,
-        "mae": 0.213,
+        "mae": 0.529,
         "mean_actual": 0.518,
         "unit": "t/ha"
       },
       "Maize": {
         "n_test": 151,
-        "mae": 0.671,
+        "mae": 1.49,
         "mean_actual": 2.875,
         "unit": "t/ha"
       },
       "Masoor": {
         "n_test": 53,
-        "mae": 0.139,
+        "mae": 0.975,
         "mean_actual": 0.821,
         "unit": "t/ha"
       },
       "Mesta": {
         "n_test": 31,
-        "mae": 1.144,
+        "mae": 1.66,
         "mean_actual": 4.731,
         "unit": "t/ha"
       },
       "Moong(Green Gram)": {
         "n_test": 125,
-        "mae": 0.132,
+        "mae": 1.418,
         "mean_actual": 0.643,
         "unit": "t/ha"
       },
       "Moth": {
         "n_test": 15,
-        "mae": 0.181,
+        "mae": 0.887,
         "mean_actual": 0.544,
         "unit": "t/ha"
       },
       "Niger seed": {
         "n_test": 32,
-        "mae": 0.113,
+        "mae": 0.677,
         "mean_actual": 0.427,
         "unit": "t/ha"
       },
       "Oilseeds total": {
         "n_test": 5,
-        "mae": 4.188,
+        "mae": 2.419,
         "mean_actual": 3.331,
         "unit": "t/ha"
       },
       "Onion": {
         "n_test": 77,
-        "mae": 2.57,
+        "mae": 4.083,
         "mean_actual": 12.667,
         "unit": "t/ha"
       },
       "Other  Rabi pulses": {
         "n_test": 61,
-        "mae": 0.211,
+        "mae": 1.635,
         "mean_actual": 0.886,
         "unit": "t/ha"
       },
       "Other Cereals": {
         "n_test": 40,
-        "mae": 0.343,
+        "mae": 0.663,
         "mean_actual": 0.907,
         "unit": "t/ha"
       },
       "Other Kharif pulses": {
         "n_test": 62,
-        "mae": 0.176,
+        "mae": 0.824,
         "mean_actual": 0.8,
         "unit": "t/ha"
       },
       "Other Summer Pulses": {
         "n_test": 6,
-        "mae": 0.347,
+        "mae": 0.405,
         "mean_actual": 0.622,
         "unit": "t/ha"
       },
       "Peas & beans (Pulses)": {
         "n_test": 60,
-        "mae": 0.311,
+        "mae": 0.732,
         "mean_actual": 1.281,
         "unit": "t/ha"
       },
       "Potato": {
         "n_test": 103,
-        "mae": 2.318,
+        "mae": 3.293,
         "mean_actual": 12.338,
         "unit": "t/ha"
       },
       "Ragi": {
         "n_test": 78,
-        "mae": 0.344,
+        "mae": 0.975,
         "mean_actual": 1.35,
         "unit": "t/ha"
       },
       "Rapeseed &Mustard": {
         "n_test": 78,
-        "mae": 0.225,
+        "mae": 0.817,
         "mean_actual": 0.849,
         "unit": "t/ha"
       },
       "Rice": {
         "n_test": 182,
-        "mae": 0.398,
+        "mae": 1.424,
         "mean_actual": 2.548,
         "unit": "t/ha"
       },
       "Safflower": {
         "n_test": 29,
-        "mae": 0.179,
+        "mae": 0.816,
         "mean_actual": 0.567,
         "unit": "t/ha"
       },
       "Sannhamp": {
         "n_test": 19,
-        "mae": 0.4,
+        "mae": 1.114,
         "mean_actual": 1.079,
         "unit": "t/ha"
       },
       "Sesamum": {
         "n_test": 112,
-        "mae": 0.133,
+        "mae": 0.632,
         "mean_actual": 0.539,
         "unit": "t/ha"
       },
       "Small millets": {
         "n_test": 79,
-        "mae": 0.186,
+        "mae": 0.709,
         "mean_actual": 0.93,
         "unit": "t/ha"
       },
       "Soyabean": {
         "n_test": 63,
-        "mae": 0.243,
+        "mae": 0.716,
         "mean_actual": 1.197,
         "unit": "t/ha"
       },
       "Sugarcane": {
         "n_test": 76,
-        "mae": 8.874,
+        "mae": 8.944,
         "mean_actual": 57.261,
         "unit": "t/ha"
       },
       "Sunflower": {
         "n_test": 74,
-        "mae": 0.422,
+        "mae": 1.093,
         "mean_actual": 1.04,
         "unit": "t/ha"
       },
       "Sweet potato": {
         "n_test": 45,
-        "mae": 2.617,
+        "mae": 3.134,
         "mean_actual": 10.061,
         "unit": "t/ha"
       },
       "Tapioca": {
         "n_test": 32,
-        "mae": 2.643,
+        "mae": 2.353,
         "mean_actual": 18.519,
         "unit": "t/ha"
       },
       "Tobacco": {
         "n_test": 57,
-        "mae": 0.534,
+        "mae": 1.942,
         "mean_actual": 1.927,
         "unit": "t/ha"
       },
       "Turmeric": {
         "n_test": 49,
-        "mae": 1.138,
+        "mae": 1.715,
         "mean_actual": 4.136,
         "unit": "t/ha"
       },
       "Urad": {
         "n_test": 125,
-        "mae": 0.149,
+        "mae": 0.925,
         "mean_actual": 0.695,
         "unit": "t/ha"
       },
       "Wheat": {
         "n_test": 78,
-        "mae": 0.432,
+        "mae": 0.875,
         "mean_actual": 2.137,
         "unit": "t/ha"
       },
       "other oilseeds": {
         "n_test": 35,
-        "mae": 1.33,
+        "mae": 3.817,
         "mean_actual": 2.223,
         "unit": "t/ha"
       }
     },
     "yield_per_year_r2": {
-      "2017": 0.983,
-      "2018": 0.972,
+      "2017": 0.988,
+      "2018": 0.974,
       "2019": 0.975
     },
-    "failure_test_accuracy": 0.8713,
-    "failure_test_precision": 0.4517,
-    "failure_test_recall": 0.6451,
-    "failure_test_f1": 0.5313,
+    "drought_test_accuracy": 0.7446,
+    "drought_majority_baseline": 0.6232,
+    "failure_test_accuracy": 0.8885,
+    "failure_test_precision": 0.5054,
+    "failure_test_recall": 0.6592,
+    "failure_test_f1": 0.5721,
     "failure_confusion_matrix": [
       [
-        2507,
-        278
+        2556,
+        229
       ],
       [
-        126,
-        229
+        121,
+        234
       ]
     ],
     "failure_test_base_rate": 0.1131,
