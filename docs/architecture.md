@@ -97,10 +97,16 @@ PlantDoc dataset could not be fetched here at any scale.
 ```
 # backend
 cd services/api
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python3 ../../ml/training/train.py   # regenerates ml/registry/v1
-uvicorn app.main:app --reload --port 8000
+
+# IMPORTANT: --reload-dir app scopes the file-watcher to source code only.
+# Without it, uvicorn watches the whole services/api folder including .venv
+# (hundreds of thousands of files) and the SQLite db it writes to — every
+# write triggers a spurious restart, which drops in-flight frontend requests
+# and shows up as empty dropdowns / "nothing works" on the client.
+uvicorn app.main:app --reload --reload-dir app --port 8000
 
 # frontend (separate terminal)
 cd apps/web
