@@ -1,0 +1,6 @@
+# Only needed to run train_photo_model.py (and its smoke test) — not part of
+# the API service's own dependencies, since the backend doesn't load a torch
+# model yet (see doctor/vision.py's docstring for why).
+torch
+torchvision
+pillow

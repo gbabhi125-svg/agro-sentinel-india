@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from ..farm.models import UnknownValueError, get_farm_models
 from ..schemas import FarmPredictRequest
+from ..storage import db
 
 router = APIRouter(prefix="/api/farm", tags=["farm"])
 
@@ -43,3 +44,11 @@ def predict(req: FarmPredictRequest):
         "season": season_result,
         "drought": drought_result,
     }
+
+
+@router.get("/community-alerts")
+def community_alerts(state: str, crop: str, window_days: int = 14):
+    """Opt-in only (plan item #9) — a report only exists here if a farmer
+    ticked 'share with nearby farmers' when submitting that diagnosis."""
+    reports = db.community_alerts(state, crop, window_days)
+    return {"state": state, "crop": crop, "window_days": window_days, "reports": reports}

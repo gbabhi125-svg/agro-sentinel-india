@@ -42,3 +42,13 @@ class DiagnoseRequest(BaseModel):
 class FeedbackRequest(BaseModel):
     improved: bool | None = None
     notes: str = ""
+
+
+class EscalateRequest(BaseModel):
+    farmer_contact: str | None = None
+
+
+class SubscribeAlertRequest(BaseModel):
+    device_token: str
+    state: str
+    crop: str

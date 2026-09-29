@@ -1,0 +1,34 @@
+{
+  "_note": "General PMFBY claim process, curated from pmfby.gov.in. This is guidance, not a claim-filing integration — PMFBY has no public API for filing a claim, so this app cannot submit one for the farmer. Exact toll-free numbers and district insurance company contacts change and are deliberately not hardcoded here; the farmer must get those from their policy document or the pmfby.gov.in portal for their district/season.",
+  "source": "https://pmfby.gov.in",
+  "last_verified": "2026-09-29",
+  "applies_when": "Your crop is notified under PMFBY for your district/season and you (or your bank, if the loan was taken against the crop) paid the premium.",
+  "urgency": "Report within 72 hours of the loss event for localized risks (hailstorm, landslide, flood/inundation) — late reporting can mean the claim is rejected.",
+  "steps": [
+    {
+      "step": 1,
+      "title": "Report the loss immediately",
+      "detail": "Use the Crop Insurance mobile app, the pmfby.gov.in portal, the toll-free number on your policy/premium receipt, or visit the bank/CSC/insurance company branch where the premium was paid. Do this within 72 hours of the damage for localized risks."
+    },
+    {
+      "step": 2,
+      "title": "Have these ready",
+      "detail": "Aadhaar number, the bank account linked to your PMFBY policy (claims are paid by direct bank transfer), your policy/premium receipt number, land record (RoR) or the tenant-farmer declaration you originally submitted, and details of what happened (crop, sown area affected, cause of loss, approximate date)."
+    },
+    {
+      "step": 3,
+      "title": "Assessment",
+      "detail": "For widespread risks (drought, widespread flooding), yield loss is assessed via Crop Cutting Experiments (CCE) conducted by the state government at the end of the season. For localized risks reported within 72 hours, an individual farm-level assessment is done by the insurance company."
+    },
+    {
+      "step": 4,
+      "title": "Settlement",
+      "detail": "Once assessed and approved, the claim amount is credited directly to your linked bank account (DBT) — no cash or cheque handling. Track status on the pmfby.gov.in portal or the Crop Insurance app using your policy number."
+    },
+    {
+      "step": 5,
+      "title": "If there's a delay or dispute",
+      "detail": "Contact your district's PMFBY grievance cell or the insurance company's district office (listed on pmfby.gov.in for your district) — or raise it with your bank if the policy was linked to a crop loan."
+    }
+  ]
+}

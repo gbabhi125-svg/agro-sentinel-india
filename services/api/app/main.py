@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import doctor, farm, market, risk, schemes, water
+from .routers import doctor, farm, market, officer, risk, schemes, sms, water
 from .storage.db import init_db
 
 app = FastAPI(title="AgroSentinel API", version="2.0.0")
@@ -30,3 +30,5 @@ app.include_router(market.router)
 app.include_router(schemes.router)
 app.include_router(risk.router)
 app.include_router(doctor.router)
+app.include_router(officer.router)
+app.include_router(sms.router)

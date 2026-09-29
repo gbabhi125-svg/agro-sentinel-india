@@ -11,6 +11,7 @@ const TILES = [
   { href: "/market", emoji: "📈", labelKey: "nav.market", subKey: "home.market.sub" },
   { href: "/schemes", emoji: "🏛️", labelKey: "nav.schemes", subKey: "home.schemes.sub" },
   { href: "/history", emoji: "🕘", labelKey: "nav.history", subKey: "home.history.sub" },
+  { href: "/officer", emoji: "📊", labelKey: "nav.officer", subKey: "home.officer.sub" },
 ];
 
 export default function Home() {

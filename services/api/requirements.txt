@@ -10,3 +10,4 @@ joblib
 pillow
 python-multipart
 pytest
+google-auth

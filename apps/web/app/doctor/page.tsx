@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import TopBar from "@/components/TopBar";
 import { useI18n } from "@/lib/i18n";
 import { api } from "@/lib/api";
@@ -15,8 +16,12 @@ export default function DoctorPage() {
   const [stage, setStage] = useState<Stage>("setup");
   const [crop, setCrop] = useState("Rice");
   const [crops, setCrops] = useState<string[]>([]);
+  const [states, setStates] = useState<string[]>([]);
+  const [state, setState] = useState("Maharashtra");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [plantLabel, setPlantLabel] = useState("");
+  const [optInCommunity, setOptInCommunity] = useState(false);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const [asked, setAsked] = useState<string[]>([]);
   const [question, setQuestion] = useState<{ id: string; text: string } | null>(null);
@@ -24,10 +29,14 @@ export default function DoctorPage() {
   const [error, setError] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
   const [offlineNotice, setOfflineNotice] = useState(false);
+  const [escalating, setEscalating] = useState(false);
+  const [escalateStatus, setEscalateStatus] = useState<string | null>(null);
+  const [nearbyReports, setNearbyReports] = useState<any[]>([]);
   const stopListenRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     api.crops().then((r) => setCrops(r.crops)).catch(() => setCrops(["Rice", "Wheat", "Maize"]));
+    api.states().then((r) => setStates(r.states)).catch(() => {});
     if (!isOnline()) {
       const cached = readLastDiagnosis();
       if (cached) {
@@ -39,11 +48,19 @@ export default function DoctorPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!crop || !state) return;
+    api.communityAlerts(state, crop).then((r) => setNearbyReports(r.reports)).catch(() => setNearbyReports([]));
+  }, [crop, state]);
+
   async function runDiagnose(nextAnswers: Record<string, boolean>, nextAsked: string[]) {
     setError(null);
     setStage("loading");
     try {
-      const res = await api.doctorDiagnose({ crop, answers: nextAnswers, asked: nextAsked, image });
+      const res = await api.doctorDiagnose({
+        crop, answers: nextAnswers, asked: nextAsked, image, state,
+        plantLabel: plantLabel || undefined, optInCommunity,
+      });
       if (res.status === "need_more_info") {
         setQuestion(res.question);
         setStage("asking");
@@ -61,6 +78,7 @@ export default function DoctorPage() {
   function handleStart() {
     setAnswers({});
     setAsked([]);
+    setEscalateStatus(null);
     runDiagnose({}, []);
   }
 
@@ -99,6 +117,19 @@ export default function DoctorPage() {
     }
   }
 
+  async function connectToExpert() {
+    if (!result?.diagnosis_id) return;
+    setEscalating(true);
+    try {
+      const res = await api.doctorEscalate(result.diagnosis_id);
+      setEscalateStatus(res.sent ? "Sent to the expert helpline." : `Not sent: ${res.reason}`);
+    } catch (e: any) {
+      setEscalateStatus(`Not sent: ${e.message}`);
+    } finally {
+      setEscalating(false);
+    }
+  }
+
   return (
     <>
       <TopBar title={t("doctor.title")} />
@@ -115,6 +146,25 @@ export default function DoctorPage() {
               </select>
             </div>
             <div>
+              <label>{t("farm.state")}</label>
+              <select value={state} onChange={(e) => setState(e.target.value)}>
+                {states.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <p className="hint" style={{ marginTop: -8 }}>Used for weather-aware diagnosis</p>
+            </div>
+
+            {nearbyReports.length > 0 && (
+              <div className="card" style={{ background: "rgba(138,90,0,0.08)", margin: 0 }}>
+                <p style={{ margin: 0, fontWeight: 600 }}>⚠️ Nearby farmers reported, last 14 days:</p>
+                {nearbyReports.map((r: any) => (
+                  <p key={r.cause_name} className="hint" style={{ margin: "4px 0 0" }}>
+                    {r.cause_name} — {r.report_count} report{r.report_count > 1 ? "s" : ""} in {state}
+                  </p>
+                ))}
+              </div>
+            )}
+
+            <div>
               <label>{t("doctor.upload_photo")}</label>
               <input
                 type="file" accept="image/*" capture="environment"
@@ -129,7 +179,23 @@ export default function DoctorPage() {
                 <img src={imagePreview} alt="preview" style={{ width: "100%", borderRadius: 10, marginBottom: 12 }} />
               )}
             </div>
+            <div>
+              <label>Plant label (optional — track this plant&apos;s progress over weeks)</label>
+              <input value={plantLabel} onChange={(e) => setPlantLabel(e.target.value)} placeholder="e.g. Tomato Plant A" />
+            </div>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.85rem" }}>
+              <input
+                type="checkbox" checked={optInCommunity} onChange={(e) => setOptInCommunity(e.target.checked)}
+                style={{ width: "auto", marginBottom: 0 }}
+              />
+              Share this diagnosis (crop + issue + state only) to alert nearby farmers
+            </label>
             <button onClick={handleStart} type="button">{t("doctor.analyze")}</button>
+            {plantLabel && (
+              <Link href={`/doctor/progress?label=${encodeURIComponent(plantLabel)}`} className="btn-secondary btn" style={{ textAlign: "center" }}>
+                View {plantLabel}&apos;s photo history
+              </Link>
+            )}
           </div>
         )}
 
@@ -186,6 +252,16 @@ export default function DoctorPage() {
                 </>
               )}
             </div>
+
+            {result.diagnosis_id && (
+              <div className="card no-print">
+                <p className="muted" style={{ margin: "0 0 8px" }}>Connect to an expert</p>
+                <button onClick={connectToExpert} disabled={escalating} type="button">
+                  {escalating ? t("common.loading") : "📲 Send to KVK/expert via WhatsApp"}
+                </button>
+                {escalateStatus && <p className="hint" style={{ marginTop: 8 }}>{escalateStatus}</p>}
+              </div>
+            )}
 
             <div className="card no-print">
               <p className="muted" style={{ margin: "0 0 8px" }}>{t("doctor.feedback_prompt")}</p>

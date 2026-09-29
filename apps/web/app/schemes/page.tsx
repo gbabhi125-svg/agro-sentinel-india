@@ -12,6 +12,8 @@ export default function SchemesPage() {
   const [droughtRisk, setDroughtRisk] = useState("Low");
   const [schemes, setSchemes] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [claimGuide, setClaimGuide] = useState<any>(null);
+  const [showClaimGuide, setShowClaimGuide] = useState(false);
 
   async function find() {
     setLoading(true);
@@ -21,6 +23,14 @@ export default function SchemesPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function toggleClaimGuide() {
+    if (!claimGuide) {
+      const g = await api.pmfbyClaimGuide();
+      setClaimGuide(g);
+    }
+    setShowClaimGuide((v) => !v);
   }
 
   return (
@@ -57,6 +67,24 @@ export default function SchemesPage() {
             </a>
           </div>
         ))}
+
+        <div className="card">
+          <button className="btn-secondary" onClick={toggleClaimGuide} type="button">
+            {showClaimGuide ? "Hide" : "🛡️ My crop failed — how do I file a PMFBY claim?"}
+          </button>
+          {showClaimGuide && claimGuide && (
+            <div style={{ marginTop: 12 }}>
+              <p className="hint">{claimGuide.urgency}</p>
+              {claimGuide.steps.map((s: any) => (
+                <div key={s.step} style={{ marginBottom: 10 }}>
+                  <strong>{s.step}. {s.title}</strong>
+                  <p style={{ margin: "2px 0 0" }}>{s.detail}</p>
+                </div>
+              ))}
+              <p className="hint">Source: {claimGuide.source} (verified {claimGuide.last_verified}). This is guidance, not an automated filing — PMFBY has no public API to file a claim through.</p>
+            </div>
+          )}
+        </div>
       </main>
     </>
   );

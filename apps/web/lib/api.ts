@@ -53,7 +53,7 @@ export const api = {
 
   doctorDiagnose: async (form: {
     crop: string; answers: Record<string, boolean>; asked: string[];
-    state?: string; image?: File | null;
+    state?: string; image?: File | null; plantLabel?: string; optInCommunity?: boolean;
   }) => {
     const fd = new FormData();
     fd.append("crop", form.crop);
@@ -61,6 +61,8 @@ export const api = {
     fd.append("asked_json", JSON.stringify(form.asked));
     if (form.state) fd.append("state", form.state);
     if (form.image) fd.append("image", form.image);
+    if (form.plantLabel) fd.append("plant_label", form.plantLabel);
+    fd.append("opt_in_community", String(!!form.optInCommunity));
     const res = await fetch(`${API_URL}/api/doctor/diagnose`, { method: "POST", body: fd });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
@@ -75,4 +77,20 @@ export const api = {
     }),
 
   doctorHistory: () => req<{ history: any[] }>("/api/doctor/history"),
+
+  doctorEscalate: (diagnosisId: string, farmerContact?: string) =>
+    req<any>(`/api/doctor/escalate/${diagnosisId}`, {
+      method: "POST", body: JSON.stringify({ farmer_contact: farmerContact }),
+    }),
+
+  plantLabels: () => req<{ labels: string[] }>("/api/doctor/plant-labels"),
+  photoProgress: (label: string) => req<any>(`/api/doctor/photo-progress/${encodeURIComponent(label)}`),
+  photoUrl: (diagnosisId: string) => `${API_URL}/api/doctor/photo/${diagnosisId}`,
+
+  communityAlerts: (state: string, crop: string) =>
+    req<any>(`/api/farm/community-alerts?state=${encodeURIComponent(state)}&crop=${encodeURIComponent(crop)}`),
+
+  pmfbyClaimGuide: () => req<any>("/api/schemes/pmfby-claim-guide"),
+
+  officerSummary: (days = 30) => req<any>(`/api/officer/summary?days=${days}`),
 };

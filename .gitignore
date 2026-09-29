@@ -75,3 +75,4 @@ logs/
 .git/
 .gitignore
 agrosentinel.db
+services/api/data/photos/
