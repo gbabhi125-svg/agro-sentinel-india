@@ -1,0 +1,145 @@
+[
+  {
+    "id": "water_deficit",
+    "name": "Water stress (not enough water)",
+    "category": "abiotic",
+    "typical_symptoms": {"wilting_dry_soil": 1.0, "leaf_edges_browning": 0.6, "stunted_growth": 0.3, "yellowing_older_leaves": 0.3},
+    "weather_signature": {"recent_dry_spell": 0.9, "recent_heavy_rain": -0.8},
+    "generic_advice": [
+      "Water early morning or evening to reduce evaporation loss.",
+      "Add mulch (dry leaves/straw) around the base to retain soil moisture.",
+      "Check the root zone at 10-15cm depth — if dry, irrigate now."
+    ],
+    "escalate_if": "wilting continues after two consecutive watering cycles"
+  },
+  {
+    "id": "waterlogging",
+    "name": "Waterlogging / root suffocation (too much water)",
+    "category": "abiotic",
+    "typical_symptoms": {"wilting_moist_soil": 1.0, "yellowing_older_leaves": 0.5, "stunted_growth": 0.4},
+    "weather_signature": {"recent_heavy_rain": 0.9, "recent_dry_spell": -0.8},
+    "generic_advice": [
+      "Improve field drainage — open a channel away from the plant if water is standing.",
+      "Avoid further irrigation until the topsoil dries out.",
+      "Loosen compacted soil around the base once it is dry enough to walk on."
+    ],
+    "escalate_if": "roots smell foul or are visibly rotting when the plant is gently uprooted"
+  },
+  {
+    "id": "nitrogen_deficiency",
+    "name": "Nitrogen deficiency",
+    "category": "nutrient",
+    "typical_symptoms": {"yellowing_older_leaves": 1.0, "stunted_growth": 0.5},
+    "weather_signature": {"recent_heavy_rain": 0.4},
+    "generic_advice": [
+      "Nitrogen moves from old to new leaves first, so older/lower leaves yellow first — this is the classic sign.",
+      "Apply a balanced, locally recommended fertilizer or well-rotted compost/manure.",
+      "Heavy recent rain can wash nitrogen out of sandy soils — consider a split fertilizer schedule."
+    ],
+    "escalate_if": "yellowing continues after one fertilizer application at the recommended dose"
+  },
+  {
+    "id": "iron_deficiency",
+    "name": "Iron/micronutrient deficiency (interveinal chlorosis)",
+    "category": "nutrient",
+    "typical_symptoms": {"yellowing_new_leaves": 1.0, "interveinal_chlorosis": 1.0},
+    "weather_signature": {},
+    "generic_advice": [
+      "New leaves yellowing while veins stay green usually points to iron or another micronutrient, not nitrogen.",
+      "This is common in alkaline or waterlogged soils where iron becomes less available to roots.",
+      "A soil test (free at your nearest Krishi Vigyan Kendra) confirms which micronutrient is short before you spend on inputs."
+    ],
+    "escalate_if": "symptom does not improve after correcting soil drainage/pH"
+  },
+  {
+    "id": "potassium_deficiency",
+    "name": "Potassium deficiency",
+    "category": "nutrient",
+    "typical_symptoms": {"leaf_edges_browning": 1.0, "yellowing_older_leaves": 0.4},
+    "weather_signature": {},
+    "generic_advice": [
+      "Scorched, browning leaf edges/tips on older leaves is a classic potassium sign.",
+      "Wood ash or a potash-based fertilizer, applied per local recommendation, is the usual correction.",
+      "Confirm with a soil test before repeat applications."
+    ],
+    "escalate_if": "browning spreads to the whole leaf rather than staying at the margin"
+  },
+  {
+    "id": "heat_stress",
+    "name": "Heat stress",
+    "category": "abiotic",
+    "typical_symptoms": {"leaf_curling": 0.5, "wilting_dry_soil": 0.4, "stunted_growth": 0.3},
+    "weather_signature": {"high_temperature": 0.9},
+    "generic_advice": [
+      "Provide temporary shade netting during the hottest part of the day if feasible.",
+      "Increase watering frequency (smaller amounts, more often) during heat waves.",
+      "Avoid fertilizing during a heat spell — it can worsen stress."
+    ],
+    "escalate_if": "leaves show scorched/bleached patches, not just curling"
+  },
+  {
+    "id": "fungal_leaf_disease",
+    "name": "Fungal leaf disease (blight/spot family)",
+    "category": "biotic",
+    "typical_symptoms": {"brown_spots_with_halo": 1.0, "white_powdery_coating": 0.7, "symptom_spreading_fast": 0.4},
+    "weather_signature": {"high_humidity": 0.8, "recent_heavy_rain": 0.5},
+    "generic_advice": [
+      "Remove and destroy (do not compost) visibly infected leaves to slow spread.",
+      "Improve airflow — wider plant spacing and pruning dense growth reduces humidity around leaves.",
+      "Avoid overhead watering in the evening; water at the base in the morning instead."
+    ],
+    "escalate_if": "more than a quarter of the plant's leaves are affected, or it is spreading across the field"
+  },
+  {
+    "id": "bacterial_disease",
+    "name": "Bacterial disease",
+    "category": "biotic",
+    "typical_symptoms": {"water_soaked_lesions": 1.0, "symptom_spreading_fast": 0.6},
+    "weather_signature": {"high_humidity": 0.6, "recent_heavy_rain": 0.6},
+    "generic_advice": [
+      "Avoid working in the field while leaves are wet — this spreads bacteria between plants.",
+      "Remove severely affected plants/leaves and dispose away from the field, not on the compost heap.",
+      "Disinfect tools between plants if pruning affected material."
+    ],
+    "escalate_if": "lesions are spreading rapidly across many plants — this needs expert confirmation before any treatment"
+  },
+  {
+    "id": "viral_disease",
+    "name": "Viral disease (often pest-transmitted)",
+    "category": "biotic",
+    "typical_symptoms": {"leaf_curling": 0.8, "stunted_growth": 0.6, "yellowing_new_leaves": 0.3},
+    "weather_signature": {},
+    "generic_advice": [
+      "Viral diseases cannot be cured — management focuses on controlling the insect that spreads it (often whitefly or aphids).",
+      "Remove and destroy severely affected plants to reduce the source of spread.",
+      "This needs an expert/KVK visit to confirm — many viral symptoms look similar to nutrient or pest issues."
+    ],
+    "escalate_if": "always — viral disease should be confirmed by an expert, not chemically treated on a guess"
+  },
+  {
+    "id": "sap_sucking_pest",
+    "name": "Sap-sucking pest (aphid/whitefly/mite family)",
+    "category": "biotic",
+    "typical_symptoms": {"sticky_residue": 0.8, "black_sooty_mold": 0.6, "leaf_curling": 0.5, "visible_insects": 0.7, "webbing_present": 0.5},
+    "weather_signature": {"hot_dry": 0.6},
+    "generic_advice": [
+      "Check the underside of leaves — most sap-sucking pests hide there.",
+      "A strong jet of water can dislodge many of them without any chemical.",
+      "Yellow sticky traps help monitor and reduce flying pests like whitefly and aphids."
+    ],
+    "escalate_if": "infestation covers most of the plant or is spreading across the field within days"
+  },
+  {
+    "id": "chewing_pest",
+    "name": "Chewing pest (caterpillar/beetle family)",
+    "category": "biotic",
+    "typical_symptoms": {"holes_in_leaves": 1.0, "visible_insects": 0.5},
+    "weather_signature": {"warm_humid": 0.4},
+    "generic_advice": [
+      "Hand-pick visible caterpillars/beetles in the early morning when they are easiest to spot.",
+      "Check field margins and weeds nearby — they often shelter these pests between feeding.",
+      "Encourage natural predators (birds, ladybirds) by avoiding broad chemical spraying."
+    ],
+    "escalate_if": "damage is severe and spreading across many plants within a few days"
+  }
+]

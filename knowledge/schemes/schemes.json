@@ -1,0 +1,95 @@
+{
+  "_note": "Curated from each scheme's official portal. 'last_verified' is when this file was written, not a live feed — re-check the source link before relying on eligibility details in production.",
+  "schemes": [
+    {
+      "id": "PM-KISAN",
+      "full_name": "Pradhan Mantri Kisan Samman Nidhi",
+      "benefit": "Rs 6,000/year direct income support paid in 3 installments",
+      "eligibility": "Small & marginal farmer families with cultivable landholding",
+      "link": "https://pmkisan.gov.in",
+      "source": "https://pmkisan.gov.in",
+      "last_verified": "2026-09-29",
+      "applies_to": {"crops": "all", "max_land_ha": null}
+    },
+    {
+      "id": "PMFBY",
+      "full_name": "Pradhan Mantri Fasal Bima Yojana",
+      "benefit": "Crop insurance covering yield loss from natural calamities, pests and disease",
+      "eligibility": "Farmers growing notified crops in notified areas",
+      "link": "https://pmfby.gov.in",
+      "source": "https://pmfby.gov.in",
+      "last_verified": "2026-09-29",
+      "applies_to": {"crops": "all"}
+    },
+    {
+      "id": "PKVY",
+      "full_name": "Paramparagat Krishi Vikas Yojana",
+      "benefit": "Financial support for farmer clusters adopting organic farming",
+      "eligibility": "Farmer groups (typically 50+ farmers) willing to form an organic cluster",
+      "link": "https://pgsindia-ncof.gov.in",
+      "source": "https://pgsindia-ncof.gov.in",
+      "last_verified": "2026-09-29",
+      "applies_to": {"crops": "all"}
+    },
+    {
+      "id": "MIDH",
+      "full_name": "Mission for Integrated Development of Horticulture",
+      "benefit": "Subsidy support for horticulture infrastructure and inputs",
+      "eligibility": "Farmers growing fruits, vegetables, spices or flowers",
+      "link": "https://midh.gov.in",
+      "source": "https://midh.gov.in",
+      "last_verified": "2026-09-29",
+      "applies_to": {"crops": ["Banana", "Onion", "Potato", "Turmeric", "Ginger", "Coconut", "Garlic"]}
+    },
+    {
+      "id": "PMKSY",
+      "full_name": "Pradhan Mantri Krishi Sinchayee Yojana",
+      "benefit": "Support for irrigation infrastructure — 'Har Khet Ko Paani'",
+      "eligibility": "Farmers lacking reliable irrigation access",
+      "link": "https://pmksy.gov.in",
+      "source": "https://pmksy.gov.in",
+      "last_verified": "2026-09-29",
+      "applies_to": {"crops": "all", "prefers_drought_risk": ["High", "Medium"]}
+    },
+    {
+      "id": "e-NAM",
+      "full_name": "National Agriculture Market",
+      "benefit": "Online trading platform for price discovery without middlemen",
+      "eligibility": "Farmers with produce to sell through a registered mandi",
+      "link": "https://enam.gov.in",
+      "source": "https://enam.gov.in",
+      "last_verified": "2026-09-29",
+      "applies_to": {"crops": "all"}
+    },
+    {
+      "id": "Soil-Health-Card",
+      "full_name": "Soil Health Card Scheme",
+      "benefit": "Free soil testing with fertilizer recommendations every 2 years",
+      "eligibility": "All farmers",
+      "link": "https://soilhealth.dac.gov.in",
+      "source": "https://soilhealth.dac.gov.in",
+      "last_verified": "2026-09-29",
+      "applies_to": {"crops": "all"}
+    },
+    {
+      "id": "KCC",
+      "full_name": "Kisan Credit Card",
+      "benefit": "Short-term crop loans at subsidised (4-7%) interest",
+      "eligibility": "Farmers, including tenant farmers and sharecroppers",
+      "link": "https://www.nabard.org",
+      "source": "https://www.nabard.org",
+      "last_verified": "2026-09-29",
+      "applies_to": {"crops": "all"}
+    },
+    {
+      "id": "RKVY",
+      "full_name": "Rashtriya Krishi Vikas Yojana",
+      "benefit": "State-level agricultural infrastructure and development projects",
+      "eligibility": "Varies by state scheme; check state agriculture department",
+      "link": "https://rkvy.nic.in",
+      "source": "https://rkvy.nic.in",
+      "last_verified": "2026-09-29",
+      "applies_to": {"crops": "all"}
+    }
+  ]
+}

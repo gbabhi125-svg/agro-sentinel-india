@@ -74,3 +74,4 @@ logs/
 # Misc
 .git/
 .gitignore
+agrosentinel.db

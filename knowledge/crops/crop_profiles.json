@@ -1,0 +1,92 @@
+{
+  "_note": "Full named disease/pest profiles exist only for these crops. Every other crop in the trained model's crop list (see ml/registry/v1/metadata.json) still gets a diagnosis, but only at the generic cause level (e.g. 'fungal leaf disease') — the reasoning engine and the UI must say so honestly rather than inventing crop-specific names for the rest.",
+  "profiles": {
+    "Rice": {
+      "diseases": [
+        {"name": "Rice Blast", "cause_id": "fungal_leaf_disease", "risk_factors": ["high_humidity", "cool_moist"], "severity": "High"},
+        {"name": "Bacterial Leaf Blight", "cause_id": "bacterial_disease", "risk_factors": ["standing_water", "windy"], "severity": "High"},
+        {"name": "Sheath Blight", "cause_id": "fungal_leaf_disease", "risk_factors": ["high_humidity", "dense_planting"], "severity": "Medium"}
+      ],
+      "pests": [
+        {"name": "Brown Plant Hopper", "cause_id": "sap_sucking_pest", "risk_factors": ["high_humidity", "standing_water"], "severity": "High"},
+        {"name": "Stem Borer", "cause_id": "chewing_pest", "risk_factors": ["warm_humid"], "severity": "Medium"}
+      ]
+    },
+    "Wheat": {
+      "diseases": [
+        {"name": "Yellow Rust", "cause_id": "fungal_leaf_disease", "risk_factors": ["cool_moist"], "severity": "High"},
+        {"name": "Powdery Mildew", "cause_id": "fungal_leaf_disease", "risk_factors": ["dry_warm"], "severity": "Medium"}
+      ],
+      "pests": [
+        {"name": "Aphids", "cause_id": "sap_sucking_pest", "risk_factors": ["dry_weather"], "severity": "Medium"}
+      ]
+    },
+    "Maize": {
+      "diseases": [
+        {"name": "Turcicum Leaf Blight", "cause_id": "fungal_leaf_disease", "risk_factors": ["high_humidity", "moderate_temp"], "severity": "High"}
+      ],
+      "pests": [
+        {"name": "Fall Armyworm", "cause_id": "chewing_pest", "risk_factors": ["warm_humid"], "severity": "High"}
+      ]
+    },
+    "Cotton(lint)": {
+      "diseases": [
+        {"name": "Cotton Leaf Curl Virus", "cause_id": "viral_disease", "risk_factors": ["high_humidity", "whitefly_present"], "severity": "High"}
+      ],
+      "pests": [
+        {"name": "Bollworm", "cause_id": "chewing_pest", "risk_factors": ["warm_humid"], "severity": "High"},
+        {"name": "Whitefly", "cause_id": "sap_sucking_pest", "risk_factors": ["hot_dry"], "severity": "High"}
+      ]
+    },
+    "Potato": {
+      "diseases": [
+        {"name": "Late Blight", "cause_id": "fungal_leaf_disease", "risk_factors": ["cool_moist", "high_humidity"], "severity": "High"},
+        {"name": "Early Blight", "cause_id": "fungal_leaf_disease", "risk_factors": ["warm", "high_humidity"], "severity": "Medium"}
+      ],
+      "pests": [
+        {"name": "Aphids", "cause_id": "sap_sucking_pest", "risk_factors": ["dry_weather"], "severity": "Medium"}
+      ]
+    },
+    "Onion": {
+      "diseases": [
+        {"name": "Purple Blotch", "cause_id": "fungal_leaf_disease", "risk_factors": ["high_humidity"], "severity": "Medium"}
+      ],
+      "pests": [
+        {"name": "Thrips", "cause_id": "sap_sucking_pest", "risk_factors": ["hot_dry"], "severity": "Medium"}
+      ]
+    },
+    "Sugarcane": {
+      "diseases": [
+        {"name": "Red Rot", "cause_id": "fungal_leaf_disease", "risk_factors": ["high_humidity", "waterlogging"], "severity": "High"}
+      ],
+      "pests": [
+        {"name": "Early Shoot Borer", "cause_id": "chewing_pest", "risk_factors": ["warm_humid"], "severity": "Medium"}
+      ]
+    },
+    "Groundnut": {
+      "diseases": [
+        {"name": "Tikka Leaf Spot", "cause_id": "fungal_leaf_disease", "risk_factors": ["high_humidity"], "severity": "Medium"}
+      ],
+      "pests": [
+        {"name": "Aphids", "cause_id": "sap_sucking_pest", "risk_factors": ["dry_weather"], "severity": "Medium"}
+      ]
+    },
+    "Soyabean": {
+      "diseases": [
+        {"name": "Rust", "cause_id": "fungal_leaf_disease", "risk_factors": ["high_humidity"], "severity": "High"}
+      ],
+      "pests": [
+        {"name": "Stem Fly", "cause_id": "chewing_pest", "risk_factors": ["warm_humid"], "severity": "Medium"}
+      ]
+    },
+    "Banana": {
+      "diseases": [
+        {"name": "Sigatoka Leaf Spot", "cause_id": "fungal_leaf_disease", "risk_factors": ["high_humidity"], "severity": "Medium"},
+        {"name": "Panama Wilt", "cause_id": "waterlogging", "risk_factors": ["waterlogging", "poor_drainage"], "severity": "High"}
+      ],
+      "pests": [
+        {"name": "Banana Aphid", "cause_id": "sap_sucking_pest", "risk_factors": ["warm_humid"], "severity": "Medium"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,22 @@
+[
+  {"id": "yellowing_older_leaves", "text": "Are the OLDER, lower leaves turning yellow first?", "category": "color"},
+  {"id": "yellowing_new_leaves", "text": "Are the NEWEST leaves at the top turning yellow, with green veins?", "category": "color"},
+  {"id": "interveinal_chlorosis", "text": "Is the leaf yellow between the veins while the veins themselves stay green?", "category": "color"},
+  {"id": "leaf_edges_browning", "text": "Are the edges/tips of the leaves turning brown and dry (scorched-looking)?", "category": "color"},
+  {"id": "purple_leaf_veins", "text": "Do the leaves or stems look purplish or reddish?", "category": "color"},
+  {"id": "brown_spots_with_halo", "text": "Are there small brown or black spots on the leaves, often with a yellow ring around them?", "category": "pattern"},
+  {"id": "white_powdery_coating", "text": "Is there a white or grey powdery coating on the leaves?", "category": "pattern"},
+  {"id": "water_soaked_lesions", "text": "Are there dark, water-soaked patches on the leaves that look greasy or wet?", "category": "pattern"},
+  {"id": "black_sooty_mold", "text": "Is there a black, sooty coating on the leaves that wipes off?", "category": "pattern"},
+  {"id": "sticky_residue", "text": "Do the leaves feel sticky, or is there a shiny residue on them?", "category": "texture"},
+  {"id": "holes_in_leaves", "text": "Are there holes or chewed edges in the leaves?", "category": "texture"},
+  {"id": "leaf_curling", "text": "Are the leaves curling, twisting, or cupping upward/downward?", "category": "shape"},
+  {"id": "wilting_dry_soil", "text": "Is the plant wilting, and does the soil around it feel dry?", "category": "wilting"},
+  {"id": "wilting_moist_soil", "text": "Is the plant wilting even though the soil is moist or waterlogged?", "category": "wilting"},
+  {"id": "stunted_growth", "text": "Is the plant noticeably smaller or slower-growing than nearby plants of the same age?", "category": "growth"},
+  {"id": "visible_insects", "text": "Can you see insects (tiny bugs, caterpillars, or flying pests) on the plant?", "category": "pest"},
+  {"id": "webbing_present", "text": "Is there fine webbing on the underside of leaves?", "category": "pest"},
+  {"id": "recent_heavy_rain", "text": "Has there been heavy rain or standing water in the field in the last few days?", "category": "context"},
+  {"id": "recent_dry_spell", "text": "Has it been more than a week since the field was last watered or rained on?", "category": "context"},
+  {"id": "symptom_spreading_fast", "text": "Did these symptoms appear and spread within the last 2-3 days?", "category": "context"}
+]

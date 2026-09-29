@@ -1,0 +1,45 @@
+from fastapi import APIRouter, HTTPException
+
+from ..farm.models import UnknownValueError, get_farm_models
+from ..schemas import FarmPredictRequest
+
+router = APIRouter(prefix="/api/farm", tags=["farm"])
+
+
+@router.get("/crops")
+def crops():
+    return {"crops": get_farm_models().meta["crops"]}
+
+
+@router.get("/states")
+def states():
+    return {"states": get_farm_models().meta["states"]}
+
+
+@router.get("/model-card")
+def model_card():
+    """Honest, full validation metrics — replaces the old '100% accuracy' stat cards."""
+    fm = get_farm_models()
+    return {"validation": fm.meta["validation"], "known_issues": fm.meta["known_issues"]}
+
+
+@router.post("/predict")
+def predict(req: FarmPredictRequest):
+    fm = get_farm_models()
+    try:
+        yield_result = fm.predict_yield(req.state, req.crop, req.season, req.year,
+                                         req.rainfall_mm, req.fertilizer_kg, req.pesticide_kg)
+        failure_result = fm.predict_failure(req.state, req.crop, req.season, req.year,
+                                             req.rainfall_mm, req.fertilizer_kg, req.pesticide_kg)
+        season_result = fm.recommend_season(req.state, req.crop, req.year, req.rainfall_mm)
+        drought_result = fm.drought_risk(req.state, req.rainfall_mm)
+    except UnknownValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return {
+        "input": req.model_dump(),
+        "yield": yield_result,
+        "failure": failure_result,
+        "season": season_result,
+        "drought": drought_result,
+    }
