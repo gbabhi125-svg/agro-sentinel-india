@@ -6,7 +6,7 @@ import os
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _PATH = os.path.join(_HERE, "..", "..", "..", "..", "knowledge", "insurance", "pmfby_claim_steps.json")
-with open(_PATH) as f:
+with open(_PATH, encoding="utf-8") as f:
     CLAIM_GUIDE = json.load(f)
 
 

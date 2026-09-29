@@ -4,7 +4,7 @@ import os
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _PATH = os.path.join(_HERE, "..", "..", "..", "..", "knowledge", "schemes", "schemes.json")
-with open(_PATH) as f:
+with open(_PATH, encoding="utf-8") as f:
     SCHEMES = json.load(f)["schemes"]
 
 

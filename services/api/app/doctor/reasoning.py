@@ -18,11 +18,11 @@ from . import safety
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _KNOWLEDGE_DIR = os.path.join(_HERE, "..", "..", "..", "..", "knowledge")
 
-with open(os.path.join(_KNOWLEDGE_DIR, "causes", "causes.json")) as f:
+with open(os.path.join(_KNOWLEDGE_DIR, "causes", "causes.json"), encoding="utf-8") as f:
     CAUSES = {c["id"]: c for c in json.load(f)}
-with open(os.path.join(_KNOWLEDGE_DIR, "observations", "observations.json")) as f:
+with open(os.path.join(_KNOWLEDGE_DIR, "observations", "observations.json"), encoding="utf-8") as f:
     OBSERVATIONS = {o["id"]: o for o in json.load(f)}
-with open(os.path.join(_KNOWLEDGE_DIR, "crops", "crop_profiles.json")) as f:
+with open(os.path.join(_KNOWLEDGE_DIR, "crops", "crop_profiles.json"), encoding="utf-8") as f:
     CROP_PROFILES = json.load(f)["profiles"]
 
 # Safety gate runs at import time: if anyone edits causes.json to slip in a

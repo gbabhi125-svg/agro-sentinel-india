@@ -282,7 +282,7 @@ def main():
     joblib.dump(le_season, os.path.join(REGISTRY_DIR, "le_season.pkl"))
     joblib.dump(le_drought, os.path.join(REGISTRY_DIR, "le_drought.pkl"))
 
-    with open(os.path.join(REGISTRY_DIR, "state_lpa.json"), "w") as f:
+    with open(os.path.join(REGISTRY_DIR, "state_lpa.json"), "w", encoding="utf-8") as f:
         json.dump(state_lpa, f, indent=2)
 
     metadata = {
@@ -325,7 +325,7 @@ def main():
             "season_test_accuracy": round(float(season_acc), 4),
         },
     }
-    with open(os.path.join(REGISTRY_DIR, "metadata.json"), "w") as f:
+    with open(os.path.join(REGISTRY_DIR, "metadata.json"), "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=2)
 
     print(f"\nSaved 4 models + metadata to {REGISTRY_DIR}")

@@ -33,9 +33,9 @@ class FarmModels:
         self.le_crop = joblib.load(os.path.join(REGISTRY_DIR, "le_crop.pkl"))
         self.le_season = joblib.load(os.path.join(REGISTRY_DIR, "le_season.pkl"))
         self.le_drought = joblib.load(os.path.join(REGISTRY_DIR, "le_drought.pkl"))
-        with open(os.path.join(REGISTRY_DIR, "metadata.json")) as f:
+        with open(os.path.join(REGISTRY_DIR, "metadata.json"), encoding="utf-8") as f:
             self.meta = json.load(f)
-        with open(os.path.join(REGISTRY_DIR, "state_lpa.json")) as f:
+        with open(os.path.join(REGISTRY_DIR, "state_lpa.json"), encoding="utf-8") as f:
             self.state_lpa = json.load(f)
         self.feat = self.meta["feature_names"]
 

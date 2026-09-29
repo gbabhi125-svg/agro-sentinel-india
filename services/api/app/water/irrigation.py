@@ -13,7 +13,7 @@ import os
 from datetime import date, timedelta
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(_HERE, "crop_coefficients.json")) as f:
+with open(os.path.join(_HERE, "crop_coefficients.json"), encoding="utf-8") as f:
     _COEFF = json.load(f)
 
 

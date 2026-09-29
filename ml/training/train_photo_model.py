@@ -112,7 +112,7 @@ def train(data_dir: str, out_dir: str, epochs: int, batch_size: int, val_fractio
 
     os.makedirs(out_dir, exist_ok=True)
     torch.save(model.state_dict(), os.path.join(out_dir, "photo_model.pt"))
-    with open(os.path.join(out_dir, "photo_classes.json"), "w") as f:
+    with open(os.path.join(out_dir, "photo_classes.json"), "w", encoding="utf-8") as f:
         json.dump(class_names, f, indent=2)
     print(f"Saved photo_model.pt + photo_classes.json to {out_dir}")
     return {"classes": class_names, "final_val_acc": val_acc}
