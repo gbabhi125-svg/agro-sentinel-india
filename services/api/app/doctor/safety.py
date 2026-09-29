@@ -34,9 +34,27 @@ def assert_advice_is_safe(advice_items: list[str]) -> None:
             )
 
 
-def escalation_message() -> str:
-    return (
-        "I'm not confident enough to name a specific chemical treatment, and this app never "
-        "guesses on that. Please show these photos and answers to your nearest Krishi Vigyan "
-        "Kendra (KVK) or agriculture extension officer before applying anything."
-    )
+_ESCALATION_MESSAGES = {
+    "en": ("I'm not confident enough to name a specific chemical treatment, and this app never "
+           "guesses on that. Please show these photos and answers to your nearest Krishi Vigyan "
+           "Kendra (KVK) or agriculture extension officer before applying anything."),
+    "hi": ("मुझे किसी खास रासायनिक उपचार का नाम बताने लायक भरोसा नहीं है, और यह ऐप कभी अंदाज़े से "
+           "नहीं बताता। कृपया कुछ भी लगाने से पहले ये फोटो और जवाब अपने नज़दीकी कृषि विज्ञान केंद्र "
+           "(केवीके) या कृषि विस्तार अधिकारी को दिखाएँ।"),
+    "kn": ("ನಿರ್ದಿಷ್ಟ ರಾಸಾಯನಿಕ ಚಿಕಿತ್ಸೆಯ ಹೆಸರು ಹೇಳುವಷ್ಟು ನನಗೆ ಖಚಿತತೆ ಇಲ್ಲ, ಮತ್ತು ಈ ಆ್ಯಪ್ ಎಂದಿಗೂ "
+           "ಊಹೆಯಿಂದ ಹೇಳುವುದಿಲ್ಲ. ಏನನ್ನಾದರೂ ಹಚ್ಚುವ ಮೊದಲು ದಯವಿಟ್ಟು ಈ ಫೋಟೋಗಳು ಮತ್ತು ಉತ್ತರಗಳನ್ನು "
+           "ನಿಮ್ಮ ಹತ್ತಿರದ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರ (ಕೆವಿಕೆ) ಅಥವಾ ಕೃಷಿ ವಿಸ್ತರಣಾ ಅಧಿಕಾರಿಗೆ ತೋರಿಸಿ."),
+    "ta": ("ஒரு குறிப்பிட்ட ரசாயன சிகிச்சையை பெயரிடும் அளவுக்கு எனக்கு நம்பிக்கை இல்லை, இந்த ஆப் "
+           "ஒருபோதும் யூகிக்காது. எதையும் பயன்படுத்தும் முன் இந்த புகைப்படங்களையும் பதில்களையும் "
+           "உங்கள் அருகிலுள்ள கிருஷி விஞ்ஞான் கேந்திரா (கேவிகே) அல்லது வேளாண் விரிவாக்க அதிகாரியிடம் காட்டவும்."),
+    "te": ("ఒక నిర్దిష్ట రసాయన చికిత్సను పేర్కొనేంత నమ్మకం నాకు లేదు, మరియు ఈ యాప్ ఎప్పుడూ ఊహించి "
+           "చెప్పదు. దేనినైనా పూయడానికి ముందు దయచేసి ఈ ఫోటోలు మరియు జవాబులను మీ సమీప కృషి విజ్ఞాన "
+           "కేంద్రం (కెవికె) లేదా వ్యవసాయ విస్తరణ అధికారికి చూపించండి."),
+    "ml": ("ഒരു നിർദ്ദിഷ്ട രാസ ചികിത്സയുടെ പേര് പറയാൻ മാത്രം എനിക്ക് ഉറപ്പില്ല, ഈ ആപ്പ് ഒരിക്കലും "
+           "ഊഹിച്ച് പറയില്ല. എന്തെങ്കിലും പ്രയോഗിക്കുന്നതിന് മുമ്പ് ഈ ഫോട്ടോകളും ഉത്തരങ്ങളും നിങ്ങളുടെ "
+           "അടുത്തുള്ള കൃഷി വിജ്ഞാന കേന്ദ്രത്തിനോ (കെവികെ) കാർഷിക വിപുലീകരണ ഓഫീസർക്കോ കാണിക്കുക."),
+}
+
+
+def escalation_message(lang: str = "en") -> str:
+    return _ESCALATION_MESSAGES.get(lang, _ESCALATION_MESSAGES["en"])

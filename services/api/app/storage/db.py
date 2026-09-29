@@ -40,6 +40,15 @@ def _add_column_if_missing(c, table: str, column: str, decl: str):
 def init_db():
     with _conn() as c:
         c.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,
+                created_at TEXT NOT NULL,
+                name TEXT NOT NULL,
+                username TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL
+            )
+        """)
+        c.execute("""
             CREATE TABLE IF NOT EXISTS diagnoses (
                 id TEXT PRIMARY KEY,
                 created_at TEXT NOT NULL,
@@ -51,6 +60,7 @@ def init_db():
         _add_column_if_missing(c, "diagnoses", "plant_label", "TEXT")
         _add_column_if_missing(c, "diagnoses", "state", "TEXT")
         _add_column_if_missing(c, "diagnoses", "photo_path", "TEXT")
+        _add_column_if_missing(c, "diagnoses", "user_id", "TEXT")
 
         c.execute("""
             CREATE TABLE IF NOT EXISTS feedback (
@@ -84,7 +94,7 @@ def init_db():
 
 def save_diagnosis(crop: str, result: dict, plant_label: str | None = None,
                     state: str | None = None, photo_bytes: bytes | None = None,
-                    opt_in_community: bool = False) -> str:
+                    opt_in_community: bool = False, user_id: str | None = None) -> str:
     diagnosis_id = str(uuid.uuid4())
     photo_path = None
     if photo_bytes:
@@ -94,10 +104,10 @@ def save_diagnosis(crop: str, result: dict, plant_label: str | None = None,
 
     with _conn() as c:
         c.execute(
-            "INSERT INTO diagnoses (id, created_at, crop, result_json, plant_label, state, photo_path) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO diagnoses (id, created_at, crop, result_json, plant_label, state, photo_path, user_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             (diagnosis_id, datetime.now(timezone.utc).isoformat(), crop, json.dumps(result),
-             plant_label, state, photo_path),
+             plant_label, state, photo_path, user_id),
         )
         if opt_in_community and state and result.get("status") == "diagnosed":
             c.execute(
@@ -109,12 +119,40 @@ def save_diagnosis(crop: str, result: dict, plant_label: str | None = None,
     return diagnosis_id
 
 
-def list_history(limit: int = 50) -> list[dict]:
+def create_user(name: str, username: str, password_hash: str) -> dict:
+    user_id = str(uuid.uuid4())
     with _conn() as c:
-        rows = c.execute(
-            "SELECT id, created_at, crop, result_json, farmer_feedback_status, plant_label, photo_path "
-            "FROM diagnoses ORDER BY created_at DESC LIMIT ?", (limit,)
-        ).fetchall()
+        c.execute(
+            "INSERT INTO users (id, created_at, name, username, password_hash) VALUES (?, ?, ?, ?, ?)",
+            (user_id, datetime.now(timezone.utc).isoformat(), name, username, password_hash),
+        )
+    return {"id": user_id, "name": name, "username": username}
+
+
+def get_user_by_username(username: str) -> dict | None:
+    with _conn() as c:
+        r = c.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+    return dict(r) if r else None
+
+
+def get_user_by_id(user_id: str) -> dict | None:
+    with _conn() as c:
+        r = c.execute("SELECT id, name, username FROM users WHERE id = ?", (user_id,)).fetchone()
+    return dict(r) if r else None
+
+
+def list_history(limit: int = 50, user_id: str | None = None) -> list[dict]:
+    with _conn() as c:
+        if user_id:
+            rows = c.execute(
+                "SELECT id, created_at, crop, result_json, farmer_feedback_status, plant_label, photo_path "
+                "FROM diagnoses WHERE user_id = ? ORDER BY created_at DESC LIMIT ?", (user_id, limit),
+            ).fetchall()
+        else:
+            rows = c.execute(
+                "SELECT id, created_at, crop, result_json, farmer_feedback_status, plant_label, photo_path "
+                "FROM diagnoses ORDER BY created_at DESC LIMIT ?", (limit,)
+            ).fetchall()
     return [
         {"id": r["id"], "created_at": r["created_at"], "crop": r["crop"],
          "result": json.loads(r["result_json"]), "feedback_status": r["farmer_feedback_status"],

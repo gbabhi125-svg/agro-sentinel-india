@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/theme";
 import { I18nProvider } from "@/lib/i18n";
-import BottomNav from "@/components/BottomNav";
+import { AuthProvider } from "@/lib/auth";
+import AuthGate from "@/components/AuthGate";
 
 export const metadata: Metadata = {
   title: "AgroSentinel",
@@ -21,8 +22,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <ThemeProvider>
           <I18nProvider>
-            {children}
-            <BottomNav />
+            <AuthProvider>
+              <AuthGate>{children}</AuthGate>
+            </AuthProvider>
           </I18nProvider>
         </ThemeProvider>
       </body>

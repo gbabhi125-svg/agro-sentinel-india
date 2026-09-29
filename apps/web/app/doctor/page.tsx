@@ -59,7 +59,7 @@ export default function DoctorPage() {
     try {
       const res = await api.doctorDiagnose({
         crop, answers: nextAnswers, asked: nextAsked, image, state,
-        plantLabel: plantLabel || undefined, optInCommunity,
+        plantLabel: plantLabel || undefined, optInCommunity, lang,
       });
       if (res.status === "need_more_info") {
         setQuestion(res.question);
@@ -236,14 +236,14 @@ export default function DoctorPage() {
                     {result.advice.map((a: string, i: number) => <li key={i} style={{ marginBottom: 6 }}>{a}</li>)}
                   </ul>
                   {result.escalate_if && (
-                    <p className="hint" style={{ marginTop: 10 }}>⚠️ See a KVK officer if: {result.escalate_if}</p>
+                    <p className="hint" style={{ marginTop: 10 }}>⚠️ {t("doctor.escalate_if_prefix")} {result.escalate_if}</p>
                   )}
                 </>
               ) : (
                 <>
                   <p className="muted" style={{ margin: 0 }}>{t("doctor.uncertain_title")}</p>
                   <p>{result.message}</p>
-                  <p style={{ fontWeight: 600 }}>Top possibilities:</p>
+                  <p style={{ fontWeight: 600 }}>{t("doctor.top_possibilities")}</p>
                   <ul style={{ paddingLeft: 18 }}>
                     {result.top_candidates?.map((c: any) => (
                       <li key={c.cause_id}>{c.name} ({(c.probability * 100).toFixed(0)}%)</li>
@@ -255,9 +255,9 @@ export default function DoctorPage() {
 
             {result.diagnosis_id && (
               <div className="card no-print">
-                <p className="muted" style={{ margin: "0 0 8px" }}>Connect to an expert</p>
+                <p className="muted" style={{ margin: "0 0 8px" }}>{t("doctor.connect_expert")}</p>
                 <button onClick={connectToExpert} disabled={escalating} type="button">
-                  {escalating ? t("common.loading") : "📲 Send to KVK/expert via WhatsApp"}
+                  {escalating ? t("common.loading") : `📲 ${t("doctor.send_whatsapp_expert")}`}
                 </button>
                 {escalateStatus && <p className="hint" style={{ marginTop: 8 }}>{escalateStatus}</p>}
               </div>

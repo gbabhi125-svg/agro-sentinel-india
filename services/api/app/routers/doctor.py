@@ -1,12 +1,13 @@
 import json
 import os
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 
+from ..auth.deps import get_current_user_optional
 from ..context import weather as weather_client
 from ..doctor import escalation, reasoning, vision
-from ..doctor.reasoning import OBSERVATIONS
+from ..doctor.reasoning import OBSERVATIONS, _localize_observation
 from ..schemas import EscalateRequest, FeedbackRequest
 from ..storage import db
 
@@ -14,8 +15,8 @@ router = APIRouter(prefix="/api/doctor", tags=["doctor"])
 
 
 @router.get("/observations")
-def observations():
-    return {"observations": list(OBSERVATIONS.values())}
+def observations(lang: str = "en"):
+    return {"observations": [_localize_observation(obs_id, lang) for obs_id in OBSERVATIONS]}
 
 
 @router.post("/diagnose")
@@ -28,7 +29,9 @@ async def diagnose(
     longitude: float | None = Form(None),
     plant_label: str | None = Form(None),
     opt_in_community: bool = Form(False),
+    lang: str = Form("en"),
     image: UploadFile | None = File(None),
+    user: dict | None = Depends(get_current_user_optional),
 ):
     try:
         answers = json.loads(answers_json)
@@ -55,7 +58,7 @@ async def diagnose(
         "recent_rain_mm": current["precipitation_mm"],
     }
 
-    result = reasoning.diagnose(crop, answers, weather, photo_hints, asked)
+    result = reasoning.diagnose(crop, answers, weather, photo_hints, asked, lang=lang)
     result["photo_quality_warnings"] = photo_warnings
     result["weather_used"] = weather if weather else {"unavailable": True, "reason": current.get("reason")}
 
@@ -65,13 +68,16 @@ async def diagnose(
         result["diagnosis_id"] = db.save_diagnosis(
             crop, result, plant_label=plant_label, state=state,
             photo_bytes=photo_bytes, opt_in_community=opt_in_community,
+            user_id=user["id"] if user else None,
         )
     return result
 
 
 @router.get("/history")
-def history(limit: int = 50):
-    return {"history": db.list_history(limit)}
+def history(limit: int = 50, user: dict | None = Depends(get_current_user_optional)):
+    # Logged-in farmers see only their own history; without a token (e.g. the
+    # officer view or a not-logged-in dev call) this stays the old unscoped list.
+    return {"history": db.list_history(limit, user_id=user["id"] if user else None)}
 
 
 @router.get("/photo/{diagnosis_id}")

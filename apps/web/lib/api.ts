@@ -1,9 +1,22 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
+function getToken(): string | null {
+  try {
+    return localStorage.getItem("agrosentinel_token");
+  } catch {
+    return null;
+  }
+}
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getToken();
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
-    headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(init?.headers || {}),
+    },
   });
   if (!res.ok) {
     let detail = res.statusText;
@@ -49,11 +62,12 @@ export const api = {
   riskAlerts: (crop: string, state: string) =>
     req<any>(`/api/risk/alerts?crop=${encodeURIComponent(crop)}&state=${encodeURIComponent(state)}`),
 
-  doctorObservations: () => req<{ observations: any[] }>("/api/doctor/observations"),
+  doctorObservations: (lang = "en") =>
+    req<{ observations: any[] }>(`/api/doctor/observations?lang=${lang}`),
 
   doctorDiagnose: async (form: {
     crop: string; answers: Record<string, boolean>; asked: string[];
-    state?: string; image?: File | null; plantLabel?: string; optInCommunity?: boolean;
+    state?: string; image?: File | null; plantLabel?: string; optInCommunity?: boolean; lang?: string;
   }) => {
     const fd = new FormData();
     fd.append("crop", form.crop);
@@ -63,7 +77,12 @@ export const api = {
     if (form.image) fd.append("image", form.image);
     if (form.plantLabel) fd.append("plant_label", form.plantLabel);
     fd.append("opt_in_community", String(!!form.optInCommunity));
-    const res = await fetch(`${API_URL}/api/doctor/diagnose`, { method: "POST", body: fd });
+    fd.append("lang", form.lang || "en");
+    const token = getToken();
+    const res = await fetch(`${API_URL}/api/doctor/diagnose`, {
+      method: "POST", body: fd,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       throw new Error(body.detail || res.statusText);
@@ -93,4 +112,14 @@ export const api = {
   pmfbyClaimGuide: () => req<any>("/api/schemes/pmfby-claim-guide"),
 
   officerSummary: (days = 30) => req<any>(`/api/officer/summary?days=${days}`),
+
+  register: (name: string, username: string, password: string) =>
+    req<{ access_token: string; token_type: string }>("/api/auth/register", {
+      method: "POST", body: JSON.stringify({ name, username, password }),
+    }),
+  login: (username: string, password: string) =>
+    req<{ access_token: string; token_type: string }>("/api/auth/login", {
+      method: "POST", body: JSON.stringify({ username, password }),
+    }),
+  me: () => req<{ id: string; name: string; username: string }>("/api/auth/me"),
 };

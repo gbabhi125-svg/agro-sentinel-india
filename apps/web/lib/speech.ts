@@ -8,8 +8,18 @@ export function speechRecognitionSupported(): boolean {
   return !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
 }
 
-const YES_WORDS = ["yes", "yeah", "haan", "han", "houdu", "ಹೌದು", "हाँ", "हां"];
-const NO_WORDS = ["no", "nahi", "nahin", "illa", "ಇಲ್ಲ", "नहीं", "नही"];
+const YES_WORDS = [
+  "yes", "yeah", "haan", "han", "houdu", "ಹೌದು", "हाँ", "हां",
+  "ஆம்", "aam", "అవును", "avunu", "അതെ", "athe",
+];
+const NO_WORDS = [
+  "no", "nahi", "nahin", "illa", "ಇಲ್ಲ", "नहीं", "नही",
+  "இல்லை", "illai", "కాదు", "kaadu", "ഇല്ല",
+];
+
+const RECOGNIZER_LOCALE: Record<string, string> = {
+  hi: "hi-IN", kn: "kn-IN", ta: "ta-IN", te: "te-IN", ml: "ml-IN", en: "en-IN",
+};
 
 export function listenForYesNo(lang: string, onResult: (value: boolean | null, transcript: string) => void) {
   const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -18,7 +28,7 @@ export function listenForYesNo(lang: string, onResult: (value: boolean | null, t
     return () => {};
   }
   const recognizer = new SpeechRecognitionCtor();
-  recognizer.lang = lang === "hi" ? "hi-IN" : lang === "kn" ? "kn-IN" : "en-IN";
+  recognizer.lang = RECOGNIZER_LOCALE[lang] || "en-IN";
   recognizer.interimResults = false;
   recognizer.maxAlternatives = 3;
 

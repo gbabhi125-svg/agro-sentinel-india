@@ -1,22 +1,162 @@
 [
-  {"id": "yellowing_older_leaves", "text": "Are the OLDER, lower leaves turning yellow first?", "category": "color"},
-  {"id": "yellowing_new_leaves", "text": "Are the NEWEST leaves at the top turning yellow, with green veins?", "category": "color"},
-  {"id": "interveinal_chlorosis", "text": "Is the leaf yellow between the veins while the veins themselves stay green?", "category": "color"},
-  {"id": "leaf_edges_browning", "text": "Are the edges/tips of the leaves turning brown and dry (scorched-looking)?", "category": "color"},
-  {"id": "purple_leaf_veins", "text": "Do the leaves or stems look purplish or reddish?", "category": "color"},
-  {"id": "brown_spots_with_halo", "text": "Are there small brown or black spots on the leaves, often with a yellow ring around them?", "category": "pattern"},
-  {"id": "white_powdery_coating", "text": "Is there a white or grey powdery coating on the leaves?", "category": "pattern"},
-  {"id": "water_soaked_lesions", "text": "Are there dark, water-soaked patches on the leaves that look greasy or wet?", "category": "pattern"},
-  {"id": "black_sooty_mold", "text": "Is there a black, sooty coating on the leaves that wipes off?", "category": "pattern"},
-  {"id": "sticky_residue", "text": "Do the leaves feel sticky, or is there a shiny residue on them?", "category": "texture"},
-  {"id": "holes_in_leaves", "text": "Are there holes or chewed edges in the leaves?", "category": "texture"},
-  {"id": "leaf_curling", "text": "Are the leaves curling, twisting, or cupping upward/downward?", "category": "shape"},
-  {"id": "wilting_dry_soil", "text": "Is the plant wilting, and does the soil around it feel dry?", "category": "wilting"},
-  {"id": "wilting_moist_soil", "text": "Is the plant wilting even though the soil is moist or waterlogged?", "category": "wilting"},
-  {"id": "stunted_growth", "text": "Is the plant noticeably smaller or slower-growing than nearby plants of the same age?", "category": "growth"},
-  {"id": "visible_insects", "text": "Can you see insects (tiny bugs, caterpillars, or flying pests) on the plant?", "category": "pest"},
-  {"id": "webbing_present", "text": "Is there fine webbing on the underside of leaves?", "category": "pest"},
-  {"id": "recent_heavy_rain", "text": "Has there been heavy rain or standing water in the field in the last few days?", "category": "context"},
-  {"id": "recent_dry_spell", "text": "Has it been more than a week since the field was last watered or rained on?", "category": "context"},
-  {"id": "symptom_spreading_fast", "text": "Did these symptoms appear and spread within the last 2-3 days?", "category": "context"}
+  {"id": "yellowing_older_leaves", "text": "Are the OLDER, lower leaves turning yellow first?", "category": "color",
+    "i18n": {
+      "hi": "क्या सबसे पहले पुरानी, नीचे की पत्तियाँ पीली पड़ रही हैं?",
+      "kn": "ಮೊದಲು ಹಳೆಯ, ಕೆಳಗಿನ ಎಲೆಗಳು ಹಳದಿಯಾಗುತ್ತಿವೆಯೇ?",
+      "ta": "பழைய, கீழ் இலைகள் முதலில் மஞ்சளாக மாறுகின்றனவா?",
+      "te": "పాత, కింది ఆకులు మొదట పసుపు రంగులోకి మారుతున్నాయా?",
+      "ml": "പഴയ, താഴെയുള്ള ഇലകൾ ആദ്യം മഞ്ഞനിറമാകുന്നുണ്ടോ?"
+    }},
+  {"id": "yellowing_new_leaves", "text": "Are the NEWEST leaves at the top turning yellow, with green veins?", "category": "color",
+    "i18n": {
+      "hi": "क्या सबसे नई, ऊपर की पत्तियाँ पीली हो रही हैं जबकि नसें हरी हैं?",
+      "kn": "ಮೇಲಿನ ಹೊಸ ಎಲೆಗಳು ಹಳದಿಯಾಗುತ್ತಿದ್ದು, ನರಗಳು ಹಸಿರಾಗಿಯೇ ಇವೆಯೇ?",
+      "ta": "மேலே உள்ள புதிய இலைகள் மஞ்சளாகி, நரம்புகள் பச்சையாக இருக்கின்றனவா?",
+      "te": "పైన ఉన్న కొత్త ఆకులు పసుపు రంగులోకి మారి, ఈనెలు మాత్రం ఆకుపచ్చగా ఉన్నాయా?",
+      "ml": "മുകളിലെ പുതിയ ഇലകൾ മഞ്ഞയാകുകയും ഞരമ്പുകൾ പച്ചയായി തുടരുകയും ചെയ്യുന്നുണ്ടോ?"
+    }},
+  {"id": "interveinal_chlorosis", "text": "Is the leaf yellow between the veins while the veins themselves stay green?", "category": "color",
+    "i18n": {
+      "hi": "क्या पत्ती नसों के बीच पीली है जबकि नसें हरी बनी हुई हैं?",
+      "kn": "ಎಲೆಯ ನರಗಳ ನಡುವೆ ಹಳದಿ ಬಣ್ಣವಿದ್ದು, ನರಗಳು ಹಸಿರಾಗಿಯೇ ಇವೆಯೇ?",
+      "ta": "நரம்புகளுக்கு இடையே இலை மஞ்சளாகவும், நரம்புகள் பச்சையாகவும் இருக்கின்றனவா?",
+      "te": "ఈనెల మధ్య ఆకు పసుపు రంగులో ఉండి, ఈనెలు మాత్రం ఆకుపచ్చగా ఉన్నాయా?",
+      "ml": "ഞരമ്പുകൾക്കിടയിൽ ഇല മഞ്ഞയായി, ഞരമ്പുകൾ പച്ചയായി തുടരുന്നുണ്ടോ?"
+    }},
+  {"id": "leaf_edges_browning", "text": "Are the edges/tips of the leaves turning brown and dry (scorched-looking)?", "category": "color",
+    "i18n": {
+      "hi": "क्या पत्तियों के किनारे/नोक भूरे और सूखे (जले जैसे) हो रहे हैं?",
+      "kn": "ಎಲೆಗಳ ಅಂಚು/ತುದಿ ಕಂದು ಬಣ್ಣಕ್ಕೆ ತಿರುಗಿ ಒಣಗುತ್ತಿದೆಯೇ (ಸುಟ್ಟಂತೆ)?",
+      "ta": "இலைகளின் ஓரங்கள்/நுனிகள் பழுப்பு நிறமாகி காய்ந்து (வெந்தது போல்) இருக்கின்றனவா?",
+      "te": "ఆకుల అంచులు/కొనలు గోధుమ రంగులోకి మారి ఎండిపోతున్నాయా (కాలినట్లు)?",
+      "ml": "ഇലകളുടെ അരികുകൾ/അഗ്രങ്ങൾ തവിട്ടുനിറമായി ഉണങ്ങുന്നുണ്ടോ (പൊള്ളിയത് പോലെ)?"
+    }},
+  {"id": "purple_leaf_veins", "text": "Do the leaves or stems look purplish or reddish?", "category": "color",
+    "i18n": {
+      "hi": "क्या पत्तियाँ या तने बैंगनी या लाल रंग के दिख रहे हैं?",
+      "kn": "ಎಲೆಗಳು ಅಥವಾ ಕಾಂಡಗಳು ನೇರಳೆ ಅಥವಾ ಕೆಂಪು ಬಣ್ಣದಲ್ಲಿ ಕಾಣುತ್ತಿವೆಯೇ?",
+      "ta": "இலைகள் அல்லது தண்டுகள் ஊதா அல்லது சிவப்பு நிறமாக தெரிகின்றனவா?",
+      "te": "ఆకులు లేదా కాండం ఊదా లేదా ఎరుపు రంగులో కనిపిస్తున్నాయా?",
+      "ml": "ഇലകളോ തണ്ടോ ധൂമ്രനിറമോ ചുവപ്പോ ആയി കാണപ്പെടുന്നുണ്ടോ?"
+    }},
+  {"id": "brown_spots_with_halo", "text": "Are there small brown or black spots on the leaves, often with a yellow ring around them?", "category": "pattern",
+    "i18n": {
+      "hi": "क्या पत्तियों पर छोटे भूरे या काले धब्बे हैं, अक्सर पीले घेरे के साथ?",
+      "kn": "ಎಲೆಗಳ ಮೇಲೆ ಚಿಕ್ಕ ಕಂದು ಅಥವಾ ಕಪ್ಪು ಚುಕ್ಕೆಗಳಿದ್ದು, ಸುತ್ತಲೂ ಹಳದಿ ವರ್ತುಲವಿದೆಯೇ?",
+      "ta": "இலைகளில் சிறிய பழுப்பு அல்லது கருப்பு புள்ளிகள், பெரும்பாலும் மஞ்சள் வளையத்துடன் உள்ளனவா?",
+      "te": "ఆకులపై చిన్న గోధుమ లేదా నలుపు మచ్చలు, తరచుగా పసుపు వలయంతో ఉన్నాయా?",
+      "ml": "ഇലകളിൽ ചെറിയ തവിട്ട് അല്ലെങ്കിൽ കറുത്ത പുള്ളികൾ, പലപ്പോഴും മഞ്ഞ വളയത്തോടെ കാണുന്നുണ്ടോ?"
+    }},
+  {"id": "white_powdery_coating", "text": "Is there a white or grey powdery coating on the leaves?", "category": "pattern",
+    "i18n": {
+      "hi": "क्या पत्तियों पर सफेद या भूरे रंग की पाउडर जैसी परत है?",
+      "kn": "ಎಲೆಗಳ ಮೇಲೆ ಬಿಳಿ ಅಥವಾ ಬೂದು ಪುಡಿಯಂತಹ ಲೇಪನವಿದೆಯೇ?",
+      "ta": "இலைகளில் வெள்ளை அல்லது சாம்பல் நிற பொடி போன்ற பூச்சு உள்ளதா?",
+      "te": "ఆకులపై తెలుపు లేదా బూడిద రంగు పొడి పూత ఉందా?",
+      "ml": "ഇലകളിൽ വെള്ള അല്ലെങ്കിൽ ചാര നിറത്തിലുള്ള പൊടി പോലെയുള്ള പാട കാണുന്നുണ്ടോ?"
+    }},
+  {"id": "water_soaked_lesions", "text": "Are there dark, water-soaked patches on the leaves that look greasy or wet?", "category": "pattern",
+    "i18n": {
+      "hi": "क्या पत्तियों पर गहरे, पानी से भीगे जैसे चिकने या गीले धब्बे हैं?",
+      "kn": "ಎಲೆಗಳ ಮೇಲೆ ಗಾಢ, ನೀರಿನಿಂದ ನೆನೆದಂತಹ ಎಣ್ಣೆಯುಕ್ತ ಅಥವಾ ಒದ್ದೆ ಕಲೆಗಳಿವೆಯೇ?",
+      "ta": "இலைகளில் இருண்ட, நீரில் நனைந்தது போன்ற எண்ணெய் பசை அல்லது ஈரமான படிவுகள் உள்ளனவா?",
+      "te": "ఆకులపై నీటిలో నానిన నల్లటి, జిడ్డుగా లేదా తడిగా కనిపించే మచ్చలు ఉన్నాయా?",
+      "ml": "ഇലകളിൽ ഇരുണ്ട, വെള്ളത്തിൽ കുതിർന്നത് പോലുള്ള എണ്ണമയമോ നനവോ ഉള്ള പാടുകൾ ഉണ്ടോ?"
+    }},
+  {"id": "black_sooty_mold", "text": "Is there a black, sooty coating on the leaves that wipes off?", "category": "pattern",
+    "i18n": {
+      "hi": "क्या पत्तियों पर काली, कालिख जैसी परत है जो पोंछने से हट जाती है?",
+      "kn": "ಎಲೆಗಳ ಮೇಲೆ ಒರೆಸಿದರೆ ಹೋಗುವ ಕಪ್ಪು, ಮಸಿಯಂತಹ ಲೇಪನವಿದೆಯೇ?",
+      "ta": "துடைத்தால் போகக்கூடிய கருப்பு, புகைபடிந்த பூச்சு இலைகளில் உள்ளதா?",
+      "te": "తుడిస్తే పోయే నల్లటి, మసిలాంటి పూత ఆకులపై ఉందా?",
+      "ml": "തുടച്ചാൽ പോകുന്ന കറുത്ത, കരി പോലുള്ള പാട ഇലകളിൽ ഉണ്ടോ?"
+    }},
+  {"id": "sticky_residue", "text": "Do the leaves feel sticky, or is there a shiny residue on them?", "category": "texture",
+    "i18n": {
+      "hi": "क्या पत्तियाँ चिपचिपी लगती हैं, या उन पर चमकदार परत है?",
+      "kn": "ಎಲೆಗಳು ಜಿಗುಟಾಗಿ ಅನಿಸುತ್ತವೆಯೇ, ಅಥವಾ ಅವುಗಳ ಮೇಲೆ ಹೊಳೆಯುವ ಪದರವಿದೆಯೇ?",
+      "ta": "இலைகள் ஒட்டும் தன்மையுடன் உள்ளனவா, அல்லது அவற்றில் பளபளப்பான படிவு உள்ளதா?",
+      "te": "ఆకులు జిగురుగా అనిపిస్తున్నాయా, లేదా వాటిపై మెరిసే పొర ఉందా?",
+      "ml": "ഇലകൾ ഒട്ടിപ്പിടിക്കുന്നതായി തോന്നുന്നുണ്ടോ, അല്ലെങ്കിൽ തിളങ്ങുന്ന പാട ഉണ്ടോ?"
+    }},
+  {"id": "holes_in_leaves", "text": "Are there holes or chewed edges in the leaves?", "category": "texture",
+    "i18n": {
+      "hi": "क्या पत्तियों में छेद हैं या किनारे कुतरे हुए हैं?",
+      "kn": "ಎಲೆಗಳಲ್ಲಿ ರಂಧ್ರಗಳಿವೆಯೇ ಅಥವಾ ಅಂಚುಗಳನ್ನು ಕಡಿದಂತಿದೆಯೇ?",
+      "ta": "இலைகளில் துளைகள் உள்ளனவா அல்லது ஓரங்கள் கடிக்கப்பட்டுள்ளனவா?",
+      "te": "ఆకులలో రంధ్రాలు ఉన్నాయా లేదా అంచులు కొరికినట్లు ఉన్నాయా?",
+      "ml": "ഇലകളിൽ ദ്വാരങ്ങൾ ഉണ്ടോ അല്ലെങ്കിൽ അരികുകൾ കടിച്ചതുപോലെ ഉണ്ടോ?"
+    }},
+  {"id": "leaf_curling", "text": "Are the leaves curling, twisting, or cupping upward/downward?", "category": "shape",
+    "i18n": {
+      "hi": "क्या पत्तियाँ मुड़ रही हैं, ऐंठ रही हैं, या ऊपर/नीचे कप जैसी हो रही हैं?",
+      "kn": "ಎಲೆಗಳು ಸುರುಳಿಯಾಗುತ್ತಿವೆಯೇ, ತಿರುಚುತ್ತಿವೆಯೇ, ಅಥವಾ ಮೇಲೆ/ಕೆಳಗೆ ಬಟ್ಟಲಿನಂತೆ ಆಗುತ್ತಿವೆಯೇ?",
+      "ta": "இலைகள் சுருண்டு, முறுக்கி, அல்லது மேல்/கீழாக கிண்ணம் போல மடிகின்றனவா?",
+      "te": "ఆకులు చుట్టుకుంటున్నాయా, మెలికలు తిరుగుతున్నాయా, లేదా పైకి/కిందికి కప్పులా మారుతున్నాయా?",
+      "ml": "ഇലകൾ ചുരുളുന്നുണ്ടോ, പിരിയുന്നുണ്ടോ, അല്ലെങ്കിൽ മുകളിലേക്ക്/താഴേക്ക് കപ്പ് പോലെ ആകുന്നുണ്ടോ?"
+    }},
+  {"id": "wilting_dry_soil", "text": "Is the plant wilting, and does the soil around it feel dry?", "category": "wilting",
+    "i18n": {
+      "hi": "क्या पौधा मुरझा रहा है, और क्या आसपास की मिट्टी सूखी लगती है?",
+      "kn": "ಸಸ್ಯ ಬಾಡುತ್ತಿದೆಯೇ, ಮತ್ತು ಸುತ್ತಲಿನ ಮಣ್ಣು ಒಣಗಿದಂತೆ ಅನಿಸುತ್ತಿದೆಯೇ?",
+      "ta": "செடி வாடுகிறதா, மேலும் சுற்றியுள்ள மண் வறண்டதாக உள்ளதா?",
+      "te": "మొక్క వాడిపోతుందా, మరియు చుట్టూ ఉన్న మట్టి పొడిగా అనిపిస్తుందా?",
+      "ml": "ചെടി വാടുന്നുണ്ടോ, ചുറ്റുമുള്ള മണ്ണ് ഉണങ്ങിയതായി തോന്നുന്നുണ്ടോ?"
+    }},
+  {"id": "wilting_moist_soil", "text": "Is the plant wilting even though the soil is moist or waterlogged?", "category": "wilting",
+    "i18n": {
+      "hi": "क्या मिट्टी नम या जलभराव वाली होने पर भी पौधा मुरझा रहा है?",
+      "kn": "ಮಣ್ಣು ತೇವವಾಗಿ ಅಥವಾ ನೀರು ನಿಂತಿದ್ದರೂ ಸಸ್ಯ ಬಾಡುತ್ತಿದೆಯೇ?",
+      "ta": "மண் ஈரமாகவோ அல்லது தண்ணீர் தேங்கியிருந்தாலும் செடி வாடுகிறதா?",
+      "te": "నేల తడిగా లేదా నీరు నిలిచినా మొక్క వాడిపోతుందా?",
+      "ml": "മണ്ണ് നനവുള്ളതോ വെള്ളം കെട്ടിനിൽക്കുന്നതോ ആയിട്ടും ചെടി വാടുന്നുണ്ടോ?"
+    }},
+  {"id": "stunted_growth", "text": "Is the plant noticeably smaller or slower-growing than nearby plants of the same age?", "category": "growth",
+    "i18n": {
+      "hi": "क्या पौधा आसपास के समान उम्र के पौधों से काफी छोटा या धीमी वृद्धि वाला है?",
+      "kn": "ಸಸ್ಯವು ಹತ್ತಿರದ ಅದೇ ವಯಸ್ಸಿನ ಸಸ್ಯಗಳಿಗಿಂತ ಗಮನಾರ್ಹವಾಗಿ ಚಿಕ್ಕದಾಗಿದೆಯೇ ಅಥವಾ ನಿಧಾನವಾಗಿ ಬೆಳೆಯುತ್ತಿದೆಯೇ?",
+      "ta": "அருகிலுள்ள அதே வயது செடிகளை விட இந்த செடி குறிப்பிடத்தக்க அளவில் சிறியதாகவோ மெதுவாக வளரக்கூடியதாகவோ உள்ளதா?",
+      "te": "సమీపంలోని అదే వయస్సు మొక్కల కంటే ఈ మొక్క గమనించదగ్గ విధంగా చిన్నదిగా లేదా నెమ్మదిగా పెరుగుతుందా?",
+      "ml": "സമീപത്തുള്ള അതേ പ്രായത്തിലുള്ള ചെടികളേക്കാൾ ഇത് ശ്രദ്ധേയമായി ചെറുതോ പതുക്കെ വളരുന്നതോ ആണോ?"
+    }},
+  {"id": "visible_insects", "text": "Can you see insects (tiny bugs, caterpillars, or flying pests) on the plant?", "category": "pest",
+    "i18n": {
+      "hi": "क्या आपको पौधे पर कीड़े (छोटे बग, इल्लियाँ, या उड़ने वाले कीट) दिख रहे हैं?",
+      "kn": "ಸಸ್ಯದ ಮೇಲೆ ಕೀಟಗಳು (ಚಿಕ್ಕ ಹುಳುಗಳು, ಮರಿಹುಳುಗಳು, ಅಥವಾ ಹಾರುವ ಕೀಟಗಳು) ಕಾಣುತ್ತಿವೆಯೇ?",
+      "ta": "செடியில் பூச்சிகள் (சிறிய பூச்சிகள், கம்பளிப்பூச்சிகள், அல்லது பறக்கும் பூச்சிகள்) தெரிகின்றனவா?",
+      "te": "మొక్కపై కీటకాలు (చిన్న పురుగులు, గొంగళి పురుగులు, లేదా ఎగిరే కీటకాలు) కనిపిస్తున్నాయా?",
+      "ml": "ചെടിയിൽ പ്രാണികളെ (ചെറിയ പ്രാണികൾ, പുഴുക്കൾ, അല്ലെങ്കിൽ പറക്കുന്ന കീടങ്ങൾ) കാണാൻ കഴിയുന്നുണ്ടോ?"
+    }},
+  {"id": "webbing_present", "text": "Is there fine webbing on the underside of leaves?", "category": "pest",
+    "i18n": {
+      "hi": "क्या पत्तियों के नीचे की तरफ महीन जाला है?",
+      "kn": "ಎಲೆಗಳ ಕೆಳಭಾಗದಲ್ಲಿ ಸೂಕ್ಷ್ಮ ಜೇಡರ ಬಲೆಯಂತಹದ್ದು ಇದೆಯೇ?",
+      "ta": "இலைகளின் அடிப்பகுதியில் மெல்லிய வலை போன்றது உள்ளதா?",
+      "te": "ఆకుల కింది భాగంలో సన్నని గూడు లాంటిది ఉందా?",
+      "ml": "ഇലകളുടെ അടിഭാഗത്ത് നേർത്ത വല പോലെ എന്തെങ്കിലും ഉണ്ടോ?"
+    }},
+  {"id": "recent_heavy_rain", "text": "Has there been heavy rain or standing water in the field in the last few days?", "category": "context",
+    "i18n": {
+      "hi": "क्या पिछले कुछ दिनों में तेज़ बारिश हुई है या खेत में पानी भरा है?",
+      "kn": "ಕಳೆದ ಕೆಲವು ದಿನಗಳಲ್ಲಿ ಭಾರೀ ಮಳೆ ಬಂದಿದೆಯೇ ಅಥವಾ ಹೊಲದಲ್ಲಿ ನೀರು ನಿಂತಿದೆಯೇ?",
+      "ta": "கடந்த சில நாட்களில் கனமழை பெய்ததா அல்லது வயலில் தண்ணீர் தேங்கியிருந்ததா?",
+      "te": "గత కొన్ని రోజులలో భారీ వర్షం కురిసిందా లేదా పొలంలో నీరు నిలిచిందా?",
+      "ml": "കഴിഞ്ഞ കുറച്ച് ദിവസങ്ങളിൽ കനത്ത മഴ പെയ്തിട്ടുണ്ടോ അല്ലെങ്കിൽ പാടത്ത് വെള്ളം കെട്ടിനിന്നിട്ടുണ്ടോ?"
+    }},
+  {"id": "recent_dry_spell", "text": "Has it been more than a week since the field was last watered or rained on?", "category": "context",
+    "i18n": {
+      "hi": "क्या खेत को आखिरी बार पानी दिए या बारिश हुए एक हफ्ते से ज़्यादा हो गया है?",
+      "kn": "ಹೊಲಕ್ಕೆ ಕೊನೆಯದಾಗಿ ನೀರು ಹಾಯಿಸಿ ಅಥವಾ ಮಳೆ ಬಂದು ಒಂದು ವಾರಕ್ಕಿಂತ ಹೆಚ್ಚು ಸಮಯವಾಗಿದೆಯೇ?",
+      "ta": "வயலுக்கு கடைசியாக நீர் பாய்ச்சியோ மழை பெய்தோ ஒரு வாரத்திற்கும் மேலாகிவிட்டதா?",
+      "te": "పొలానికి చివరిసారి నీరు పెట్టి లేదా వర్షం పడి ఒక వారం కంటే ఎక్కువయ్యిందా?",
+      "ml": "പാടത്ത് അവസാനമായി വെള്ളം നനച്ചതോ മഴ പെയ്തതോ ഒരാഴ്ചയിലധികമായോ?"
+    }},
+  {"id": "symptom_spreading_fast", "text": "Did these symptoms appear and spread within the last 2-3 days?", "category": "context",
+    "i18n": {
+      "hi": "क्या ये लक्षण पिछले 2-3 दिनों में दिखे और फैले हैं?",
+      "kn": "ಈ ಲಕ್ಷಣಗಳು ಕಳೆದ 2-3 ದಿನಗಳಲ್ಲಿ ಕಾಣಿಸಿಕೊಂಡು ಹರಡಿವೆಯೇ?",
+      "ta": "இந்த அறிகுறிகள் கடந்த 2-3 நாட்களில் தோன்றி பரவினவா?",
+      "te": "ఈ లక్షణాలు గత 2-3 రోజుల్లో కనిపించి వ్యాపించాయా?",
+      "ml": "ഈ ലക്ഷണങ്ങൾ കഴിഞ്ഞ 2-3 ദിവസങ്ങൾക്കുള്ളിൽ പ്രത്യക്ഷപ്പെടുകയും പടരുകയും ചെയ്തോ?"
+    }}
 ]

@@ -26,13 +26,36 @@ with open(os.path.join(_KNOWLEDGE_DIR, "crops", "crop_profiles.json")) as f:
     CROP_PROFILES = json.load(f)["profiles"]
 
 # Safety gate runs at import time: if anyone edits causes.json to slip in a
-# chemical name, the app refuses to start rather than silently serving it.
+# chemical name — in English OR any translated language — the app refuses to
+# start rather than silently serving it.
 for _cause in CAUSES.values():
     safety.assert_advice_is_safe(_cause.get("generic_advice", []))
+    for _lang_content in _cause.get("i18n", {}).values():
+        safety.assert_advice_is_safe(_lang_content.get("generic_advice", []))
 
 CONFIDENCE_FLOOR = 0.35
 MARGIN_FLOOR = 0.12
 MAX_QUESTIONS = 3
+
+SUPPORTED_LANGS = {"en", "hi", "kn", "ta", "te", "ml"}
+
+
+def _cause_field(cause: dict, field: str, lang: str) -> str:
+    """Localized cause field with a fallback to English — never a KeyError
+    for a language that hasn't been added to a newer knowledge-base entry yet."""
+    if lang and lang != "en":
+        localized = cause.get("i18n", {}).get(lang, {})
+        if field in localized:
+            return localized[field]
+    return cause[field]
+
+
+def _localize_observation(obs_id: str, lang: str) -> dict:
+    obs = OBSERVATIONS[obs_id]
+    text = obs["text"]
+    if lang and lang != "en":
+        text = obs.get("i18n", {}).get(lang, text)
+    return {"id": obs["id"], "text": text, "category": obs["category"]}
 
 
 def derive_weather_flags(weather: dict) -> dict:
@@ -119,8 +142,10 @@ def next_question(top_causes: list[dict], answers: dict, asked: set) -> dict | N
     return OBSERVATIONS[best]
 
 
-def diagnose(crop: str, answers: dict, weather: dict, photo_hints: dict, asked: set | None = None) -> dict:
+def diagnose(crop: str, answers: dict, weather: dict, photo_hints: dict, asked: set | None = None,
+             lang: str = "en") -> dict:
     asked = asked or set()
+    lang = lang if lang in SUPPORTED_LANGS else "en"
     weather_flags = derive_weather_flags(weather)
 
     scored = [
@@ -144,17 +169,19 @@ def diagnose(crop: str, answers: dict, weather: dict, photo_hints: dict, asked: 
         if q is not None:
             return {
                 "status": "need_more_info",
-                "question": q,
+                "question": _localize_observation(q["id"], lang),
                 "questions_asked": len(asked),
-                "current_leading_guess": {"name": top["name"], "probability": top["probability"]},
+                "current_leading_guess": {
+                    "name": _cause_field(top, "name", lang), "probability": top["probability"],
+                },
             }
 
     if not confident:
         return {
             "status": "uncertain",
-            "message": safety.escalation_message(),
+            "message": safety.escalation_message(lang),
             "top_candidates": [
-                {"cause_id": c["cause_id"], "name": c["name"], "probability": c["probability"]}
+                {"cause_id": c["cause_id"], "name": _cause_field(c, "name", lang), "probability": c["probability"]}
                 for c in scored[:3]
             ],
         }
@@ -163,7 +190,7 @@ def diagnose(crop: str, answers: dict, weather: dict, photo_hints: dict, asked: 
     return {
         "status": "diagnosed",
         "cause_id": top["cause_id"],
-        "cause_name": top["name"],
+        "cause_name": _cause_field(top, "name", lang),
         "specific_name": refined["name"] if refined else None,
         "specific_name_note": (
             f"a curated profile exists for {crop}, this is its most weather-consistent match"
@@ -171,9 +198,10 @@ def diagnose(crop: str, answers: dict, weather: dict, photo_hints: dict, asked: 
         ),
         "confidence": top["probability"],
         "margin_over_second": round(margin, 4),
-        "advice": top["generic_advice"],
-        "escalate_if": top.get("escalate_if"),
-        "runner_up": {"name": second["name"], "probability": second["probability"]} if second else None,
+        "advice": _cause_field(top, "generic_advice", lang),
+        "escalate_if": _cause_field(top, "escalate_if", lang) if top.get("escalate_if") else None,
+        "runner_up": {"name": _cause_field(second, "name", lang), "probability": second["probability"]}
+        if second else None,
         "reasoning_method": "rule-based probabilistic scoring over curated symptom/weather evidence, "
                              "not a trained neural network — every number here is traceable to a rule.",
     }

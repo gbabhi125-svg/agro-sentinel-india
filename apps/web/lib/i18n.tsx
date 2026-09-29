@@ -4,10 +4,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 import en from "../messages/en.json";
 import hi from "../messages/hi.json";
 import kn from "../messages/kn.json";
+import ta from "../messages/ta.json";
+import te from "../messages/te.json";
+import ml from "../messages/ml.json";
 
-export type Lang = "en" | "hi" | "kn";
-const DICTS: Record<Lang, Record<string, string>> = { en, hi, kn };
-export const LANG_LABELS: Record<Lang, string> = { en: "English", hi: "हिन्दी", kn: "ಕನ್ನಡ" };
+export type Lang = "en" | "hi" | "kn" | "ta" | "te" | "ml";
+const DICTS: Record<Lang, Record<string, string>> = { en, hi, kn, ta, te, ml };
+export const LANG_LABELS: Record<Lang, string> = {
+  en: "English", hi: "हिन्दी", kn: "ಕನ್ನಡ", ta: "தமிழ்", te: "తెలుగు", ml: "മലയാളം",
+};
 
 const I18nContext = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (key: string) => string }>({
   lang: "en",

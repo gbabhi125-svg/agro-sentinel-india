@@ -52,3 +52,14 @@ class SubscribeAlertRequest(BaseModel):
     device_token: str
     state: str
     crop: str
+
+
+class RegisterRequest(BaseModel):
+    name: str
+    username: str
+    password: str
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
