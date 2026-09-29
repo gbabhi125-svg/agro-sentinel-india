@@ -1,3 +1,10 @@
+> **Rebuild in progress.** The content below describes the original mini-project and its
+> accuracy claims are known to be wrong (see `docs/model_card.md` for why, and the honest
+> replacement numbers). The real system now lives in `services/api/` (FastAPI backend),
+> `apps/web/` (Next.js frontend) and `ml/` (retraining pipeline) — start with
+> `docs/architecture.md` and `docs/model_card.md`. `backend/`, `frontend/` and `ml_models/`
+> below are the old mini-project, kept only as a reference until fully retired.
+
 # 🛰️ AgroSentinel India
 ### ML-Powered Agricultural Risk Intelligence System
 

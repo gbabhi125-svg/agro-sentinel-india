@@ -13,7 +13,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
+!apps/web/package-lock.json
 .npm
+.next/
 
 # React
 frontend/build/
@@ -32,8 +34,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
 parts/
 sdist/
 var/
